@@ -3,6 +3,7 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+require('express-async-errors');
 
 let indexRouter = require('./routes/index.route');
 let usersRouter = require('./routes/users.route');

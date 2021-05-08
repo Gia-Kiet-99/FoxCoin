@@ -4,9 +4,55 @@
 
 body {
   padding: 0;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif
 }
 
 a {
   color: #00B7FF;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 15px 0px;
+  border: none;
+  background-color: transparent;
+  color: #dddddd;
+}
+
+.active-tab {
+  border-bottom: 2px solid #40739e;
+  color: white;
+}
+.active-form {
+  visibility: visible;
+}
+
+.vertical-separator {
+  border-left: .5px solid #222222;
+}
+
+.opacity-bg {
+  background-color: rgba(27, 27, 50, 0.8);
+}
+
+.auth-card {
+  border-radius: 8px;
+}
+
+.form-container {
+  padding: 25px 35px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.no-border, .no-border:focus {
+  border: 0;
+  box-shadow: none;
+  outline: none;
+}
+
+.text-gray {
+  color: #dddddd;
 }

@@ -1,3 +1,99 @@
 <div id="container" class="container-fluid">
-  
+  <div class="row d-flex justify-content-center align-items-center full-height">
+    <div class="col-sm-4">
+      <div class="text-center">
+        <img class="mb-5" src="/images/fox.png" width="120px" height="120px" alt="fox.png">
+      </div>
+      <div class="opacity-bg auth-card">
+        <div class="d-flex">
+          <button id="signin-tab" class="tab-button" onclick="toggleActiveTab(this.id)">
+            <strong>Sign in</strong>
+          </button>
+          <button id="signup-tab" class="tab-button" onclick="toggleActiveTab(this.id)">
+            <strong>Sign up</strong>
+          </button>
+        </div>
+        <div class="form-container">
+          <form id="signup-form" action="/users/auth" method="POST" hidden>
+            <div class="form-group text-gray">
+              <label for="email"><strong>Email address</strong></label><br>
+              <input type="email" class="form-control shadow-none" id="email" name="email" aria-describedby="emailHelp"
+                required value="{{email}}">
+              <small id="emailHelp" class="form-text text-muted"></small>
+            </div>
+            <div class="form-group text-gray">
+              <label for="password1"><strong>Password</strong></label>
+              <input type="password" class="form-control" id="password1" name="password" required>
+            </div>
+            <div class="form-group form-check text-gray">
+              <input type="checkbox" class="form-check-input" id="showpass1" onclick="togglePassVisibility(this.id)">
+              <label class="form-check-label" for="showpass1">Show password</label>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-block btn-info my-2"><strong>Submit</strong></button>
+          </form>
+          <form id="signin-form" action="/users/auth" method="POST" hidden>
+            <div class="form-group text-gray">
+              <label for="public-key"><strong>Public key</strong></label><br>
+              <input type="text" class="form-control shadow-none" id="public-key" aria-describedby="publicKeyHelp"
+                name="publicKey" required>
+              <small id="publicKeyHelp" class="form-text text-muted"></small>
+            </div>
+            <div class="form-group text-gray">
+              <label for="password2"><strong>Password</strong></label>
+              <input type="password" class="form-control" id="password2" name="password" required>
+            </div>
+            <div class="form-group form-check text-gray">
+              <input type="checkbox" class="form-check-input" id="showpass2" onclick="togglePassVisibility(this.id)">
+              <label class="form-check-label" for="showpass2">Show password</label>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-block btn-info my-2"><strong>Submit</strong></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script type="text/javascript">
+  const tabIds = ["signup-tab", "signin-tab"];
+  const formIds = ["signup-form", "signin-form"];
+
+  function toggleActiveTab(id) {
+    console.log("id: " + id);
+
+    tabIds.forEach(id => $(`#${id}`).removeClass('active-tab'));
+    formIds.forEach(id => $(`#${id}`).prop('hidden', true));
+
+    const activeFormId = formIds[tabIds.indexOf(id)];
+    $(`#${id}`).addClass('active-tab');
+    $(`#${activeFormId}`).prop('hidden', false);
+  }
+
+  function togglePassVisibility(checkboxId) {
+    let input = null;
+    if (checkboxId === "showpass1") {
+      input = $('#password1')
+    } else {
+      input = $('#password2');
+    }
+
+    if (input.attr('type') === "password") {
+      input.attr('type', 'text');
+    } else {
+      input.attr('type', 'password');
+    }
+  }
+
+  $(document).ready(function () {
+    const receivedEmail = $('#email').val();
+    console.log('receivedEmail:' + receivedEmail);
+    if (receivedEmail) {
+      toggleActiveTab(tabIds[0]);
+    } else {
+      toggleActiveTab(tabIds[1]);
+    }
+  })
+
+</script>
