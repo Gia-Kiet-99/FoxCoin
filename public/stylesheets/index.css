@@ -1,0 +1,27 @@
+#container{
+  box-sizing: border-box;
+  background-image: url('/images/background.png');
+  background-position: center;
+  background-size: cover;
+}
+
+#welcome {
+  height: 100vh;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.text-input{
+  border: none;
+  border-radius: 3px;
+  padding: 0 10px;
+  background-color: #eeeeee;
+}
+
+.text-input:focus {
+  outline: none;
+  border: 1px solid lightskyblue;
+}
