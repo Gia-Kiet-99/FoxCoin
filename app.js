@@ -3,6 +3,7 @@ let express = require('express');
 let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
+let cors = require('cors');
 require('express-async-errors');
 
 let indexRouter = require('./routes/index.route');
@@ -15,6 +16,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -38,5 +40,29 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+const PORT = 3000;
+
+const WebSocket = require('ws');
+let p2pPort = process.env.P2P_PORT || 45678;
+let wsServer;
+if (!wsServer) {
+  wsServer = new WebSocket.Server({ port: p2pPort });
+  wsServer.on('connection', (client) => {
+    console.log("Connected");
+    client.send('Hello client')
+    client.onmessage = function (message) {
+      console.log("Received from socket client: " + message.data);
+    }
+    client.onclose = function() {
+      console.log("Disconnected");
+    }
+  })
+  console.log("Websocket server is running at " + p2pPort);
+}
+
+app.listen(3000, function() {
+  console.log(`Http server is running at port ${PORT}`);
+})
 
 module.exports = app;

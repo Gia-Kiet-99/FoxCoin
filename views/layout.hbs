@@ -25,6 +25,20 @@
 
 <body>
   {{{body}}}
+
+  <script>
+    function setupWS() {
+      const ws = new WebSocket('ws://localhost:45678');
+      ws.onopen = function () {
+        console.log('Onopen');
+        ws.send("Hello server")
+      }
+      ws.onmessage = function(message) {
+        console.log(message.data);
+      }
+    }
+    setupWS();
+  </script>
 </body>
 
 </html>

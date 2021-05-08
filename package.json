@@ -4,18 +4,24 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon app"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.0.0",
     "debug": "~2.6.9",
+    "dotenv": "^9.0.0",
+    "elliptic": "^6.5.4",
     "express": "~4.16.1",
     "express-async-errors": "^3.1.1",
     "hbs": "~4.0.4",
     "http-errors": "~1.6.3",
     "knex": "^0.95.4",
+    "lodash": "^4.17.21",
     "morgan": "~1.9.1",
     "mysql2": "^2.2.5",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "ws": "^7.4.5"
   }
 }

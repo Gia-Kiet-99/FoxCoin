@@ -4,22 +4,49 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('walletui:server');
-var http = require('http');
+let app = require('../app');
+let debug = require('debug')('walletui:server');
+let http = require('http');
+const WebSocket = require('ws');
+
+/**
+ * Start websocket server
+ */
+// let p2p = require('../model/p2p');
+// let p2pPort = process.env.P2P_PORT || 45678;
+// let wsServer;
+// if (!wsServer) {
+//   wsServer = new WebSocket.Server({ port: p2pPort });
+//   wsServer.on('connection', (client) => {
+//     console.log("Connected");
+//     client.onmessage = function (data) {
+//       console.log("Received from socket client: " + data);
+//     }
+//     client.onclose = function() {
+//       console.log("Disconnected");
+//     }
+//   })
+// }
+// p2p.initP2PServer(p2pPort);
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+let port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+let server = http.createServer(app);
+
+// server.on('upgrade', (request, socket, head) => {
+//   wsServer.handleUpgrade(request, socket, head, socket => {
+//     wsServer.emit('connection', socket, request);
+//   });
+// });
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -34,7 +61,7 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  let port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -58,7 +85,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
+  let bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -82,8 +109,8 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
+  let addr = server.address();
+  let bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
