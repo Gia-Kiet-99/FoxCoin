@@ -1,0 +1,76 @@
+<div class="container-fluid">
+
+  <header>
+    <nav class="navbar fixed-top navbar-light bg-white">
+      <a class="navbar-brand" href="#">
+        <img src="/images/fox.png" class="rounded-circle" width="36" height="36" alt="foxicon">
+        &nbsp;<strong style="color: #b64900;">FoxWallet</strong>
+      </a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="row" style="height: 100vh;">
+      <div class="col-sm-2 p-0">
+        <nav class="navbar p-0" style="margin-top: 85px;">
+          <ul style="list-style-type: none;width: 100%;margin: 0;padding: 0;">
+            <li>
+              <a href="#" class="text-left sidebar-button active-side-bar p-3 pl-4">
+                <i class="fa fa-home" style="font-size: 24px;" aria-hidden="true"></i>
+                &nbsp;&nbsp;<strong>Home</strong>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="text-left sidebar-button p-3 pl-4" role="button">
+                <i class="fab fa-wpexplorer" style="font-size: 24px;"></i>
+                &nbsp;&nbsp;<strong>Explorer</strong>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="col-sm-10 bg-light">
+        <div class="row d-flex" style="margin-top: 75px; margin-left: 75px; margin-right: 75px;">
+          <div class="d-flex p-4 mx-5 my-3 rounded-lg info" style="color: #eee; background-color: #8c7ae6;">
+            <i class="far fa-id-badge" style="font-size: 48px;"></i>
+            <div class="ml-4">
+              <h5>Address</h5>
+              <p style="max-width: 100%;">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+            </div>
+          </div>
+          <div class="d-flex p-4 mr-5 my-3 rounded-lg info" style="color: #eee;background-color: #6c5ce7;">
+            <i class="fas fa-wallet" style="font-size: 48px;"></i>
+            <div class="ml-4">
+              <h5>Balance</h5>
+              <p><strong style="font-size: larger;">0</strong> Fox</p>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="margin: 20px 125px; height: 100px;">
+          <div class="col-sm-12 rounded-lg bg-white p-0">
+            <div class="card" style="border: none; border-left: 3px solid #8c7ae6;">
+              <div class="card-header bg-white border-0">
+                <h4><strong style="color: #555">Send Transaction</strong></h4>
+              </div>
+              <div class="card-body">
+                <form action="#" method="POST">
+                  <div class="form-row mx-4 mb-4">
+                    <div class="form-group col-md-4">
+                      <label for="amount"><strong style="color: #555;">Amount</strong></label>
+                      <input type="number" name="amount" class="form-control" id="amount" min="0" placeholder="Amount">
+                    </div>
+                    <div class="form-group col-md-8">
+                      <label for="address"><strong style="color: #555;">Address</strong></label>
+                      <input type="text" name="address" class="form-control" id="address" placeholder="Address">
+                    </div>
+                    <button type="submit" class="btn mt-1"
+                      style="background-color: #6c5ce7; color: #eee"><strong>SEND</strong></button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

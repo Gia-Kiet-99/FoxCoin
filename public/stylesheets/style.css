@@ -56,3 +56,24 @@ a {
 .text-gray {
   color: #dddddd;
 }
+
+.info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar-button,
+.sidebar-button:link {
+  color: #999;
+  display: block;
+  text-decoration: none;
+}
+
+.sidebar-button:hover {
+  color: #555;
+}
+
+.active-side-bar {
+  color: #555;
+  /* background-color: #eee; */
+}

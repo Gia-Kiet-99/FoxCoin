@@ -22,7 +22,8 @@ router.post('/auth', (req, res) => {
   } else {
     //sign in
     const publicKey = req.body.publicKey;
-    res.send({publicKey, password});
+    // res.send({publicKey, password});
+    res.render('wallet/home');
   }
 });
 
