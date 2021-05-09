@@ -8,6 +8,8 @@ require('express-async-errors');
 
 let indexRouter = require('./routes/index.route');
 let usersRouter = require('./routes/users.route');
+let walletRouter = require('./routes/wallet.route');
+let explorerRouter = require('./routes/explorer.route');
 
 let app = express();
 
@@ -24,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/wallet', walletRouter);
+app.use('/explorer', explorerRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
