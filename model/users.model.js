@@ -14,6 +14,6 @@ module.exports = {
   },
 
   add(user) {
-    return db('user').insert({address: user.publicKey, password: user.password});
+    return db('user').insert(user);
   }
 }

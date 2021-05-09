@@ -14,11 +14,11 @@
           </button>
         </div>
         <div class="form-container">
-          <form id="signup-form" action="/users/auth" method="POST" hidden>
+          <div id="signup-form" hidden>
             <div class="form-group text-gray">
               <label for="email"><strong>Email address</strong></label><br>
-              <input type="email" class="form-control shadow-none" id="email" name="email" aria-describedby="emailHelp"
-                required value="{{email}}">
+              <input type="text" class="form-control shadow-none" id="email" name="email" aria-describedby="emailHelp"
+                required value="{{email}}" onchange="checkEmailExists(this.value)">
               <small id="emailHelp" class="form-text text-muted"></small>
             </div>
             <div class="form-group text-gray">
@@ -30,8 +30,9 @@
               <label class="form-check-label" for="showpass1">Show password</label>
             </div>
             <br>
-            <button type="submit" class="btn btn-block btn-info my-2"><strong>Submit</strong></button>
-          </form>
+            <button id="signup-button" class="btn btn-block btn-info my-2"
+              onclick="handleSignUp()"><strong>Submit</strong></button>
+          </div>
           <form id="signin-form" action="/users/auth" method="POST" hidden>
             <div class="form-group text-gray">
               <label for="public-key"><strong>Public key</strong></label><br>
@@ -59,6 +60,8 @@
 <script type="text/javascript">
   const tabIds = ["signup-tab", "signin-tab"];
   const formIds = ["signup-form", "signin-form"];
+  let validEmail = false;
+  let validPassword = false;
 
   function toggleActiveTab(id) {
     console.log("id: " + id);
@@ -84,6 +87,97 @@
     } else {
       input.attr('type', 'password');
     }
+  }
+
+  function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  function validatePassword(password) {
+    if(password.trim()) {
+      return true;
+    }
+    return false;
+  }
+
+  function validateForm() {
+    const password = $('#password1').val();
+    const validPassword = validatePassword(password);
+    if (validEmail && validPassword) {
+      return true;
+    }
+    return false;
+  }
+
+  function checkEmailExists(email) {
+    if (validateEmail(email)) {
+      $.ajax({
+        url: `http://localhost:3000/api/users/${email}`,
+        type: 'GET'
+      }).done((data) => {
+        console.log(data);
+        if (data.isEmailExists === true) {
+          $('#emailHelp').text("Email has already taken")
+          validEmail = false;
+        } else {
+          $('#emailHelp').text("");
+          validEmail = true;
+        }
+      })
+    } else {
+      $('#emailHelp').text("Invalid email");
+      validEmail = false;
+    }
+  }
+
+  function resetInput() {
+    $('input').val("");
+  }
+
+  function handleSignUp() {
+    if (validateForm()) {
+      $('#signup-button').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span> <strong>Processing...</strong>')
+      const dataToPost = {
+        email: $('#email').val(),
+        password: $('#password1').val()
+      };
+      const jsonToPost = JSON.stringify(dataToPost);
+
+      $.ajax({
+        url: 'http://localhost:3000/api/users',
+        type: 'POST',
+        dataType: 'json',
+        data: jsonToPost,
+        contentType: 'application/json'
+      }).done((data) => {
+        console.log(data);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: "You've created your own wallet",
+          showConfirmButton: false,
+          timer: 2000
+        });
+
+        //toggle to sign in
+        toggleActiveTab('signin-tab');
+        $('#public-key').val(data.publicKey);
+      }).fail((error) => {
+        console.log(error)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.responseJSON.error_message,
+          showConfirmButton: false,
+          timer: 2000
+        })
+      })
+
+      $('#signup-button').html('<strong>Submit</strong>');
+      resetInput();
+    }
+
   }
 
   $(document).ready(function () {

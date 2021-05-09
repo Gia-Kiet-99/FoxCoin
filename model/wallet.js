@@ -8,7 +8,7 @@ const { getPublicKey, getTransactionId, signTxIn, Transaction,
 
 
 const ec = new EC('secp256k1');
-const privateKeyLocation = 'node/wallet/private_key';
+// const privateKeyLocation = 'node/wallet/private_key';
 
 const getPrivateFromWallet = () => {
   const buffer = fs.readFileSync(privateKeyLocation, 'utf8');
@@ -28,14 +28,18 @@ const generatePrivateKey = () => {
 };
 
 const initWallet = () => {
-  // let's not override existing private keys
-  if (existsSync(privateKeyLocation)) {
-    return;
-  }
-  const newPrivateKey = generatePrivateKey();
+  // // let's not override existing private keys
+  // if (existsSync(privateKeyLocation)) {
+  //   return;
+  // }
+  // const newPrivateKey = generatePrivateKey();
 
-  fs.writeFileSync(privateKeyLocation, newPrivateKey);
-  console.log('new wallet with private key created');
+  // fs.writeFileSync(privateKeyLocation, newPrivateKey);
+  // console.log('new wallet with private key created');
+  const key = ec.genKeyPair();
+  const privateKey = key.getPrivate('hex');
+  const publicKey = key.getPublic('hex');
+  return { privateKey, publicKey };
 };
 
 const deleteWallet = () => {
@@ -87,10 +91,10 @@ const filterTxPoolTxs = (unspentTxOuts, transactionPool) => {
   const removable = [];
 
   for (const unspentTxOut of unspentTxOuts) {
-    const txIn = txIns.find(aTxIn => aTxIn.txOutIndex === unspentTxOuts.txOutIndex 
+    const txIn = txIns.find(aTxIn => aTxIn.txOutIndex === unspentTxOuts.txOutIndex
       && aTxIn.txOutId === unspentTxOuts.txOutId);
-    
-    if(txIn) {
+
+    if (txIn) {
       removable.push(unspentTxOut);
     }
   }
