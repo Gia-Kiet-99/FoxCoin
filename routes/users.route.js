@@ -23,7 +23,7 @@ router.post('/auth', (req, res) => {
     //sign in
     const publicKey = req.body.publicKey;
     // res.send({publicKey, password});
-    res.redirect('wallet/home');
+    res.redirect('/wallet');
   }
 });
 
