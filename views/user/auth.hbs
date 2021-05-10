@@ -49,7 +49,8 @@
               <label class="form-check-label" for="showpass2">Show password</label>
             </div>
             <br>
-            <button type="submit" class="btn btn-block btn-info my-2"><strong>Submit</strong></button>
+            <small id="signinHelp" class="form-text text-muted text-center">{{signin_message}}</small>
+            <button type="submit" class="btn btn-block btn-info my-2" aria-describedby="signinHelp"><strong>Submit</strong></button>
           </form>
         </div>
       </div>
@@ -95,7 +96,7 @@
   }
 
   function validatePassword(password) {
-    if(password.trim()) {
+    if (password.trim()) {
       return true;
     }
     return false;
@@ -152,13 +153,34 @@
         contentType: 'application/json'
       }).done((data) => {
         console.log(data);
-        Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: "You've created your own wallet",
-          showConfirmButton: false,
-          timer: 2000
-        });
+        Swal.mixin({
+          input: 'text',
+          confirmButtonText: 'Next &rarr;',
+          showCancelButton: false,
+          progressSteps: ['1', '2'],
+          allowOutsideClick: false,
+          confirmButtonColor: '#6c5ce7',
+          inputAttributes: { disabled: true },
+          backdrop: `rgba(0,0,0,0.8)`
+        }).queue([
+          {
+            title: 'Private key',
+            text: 'use to sign transaction',
+            inputValue: data.privateKey
+          },
+          {
+            title: 'Public key',
+            text: 'use to sign in',
+            inputValue: data.publicKey
+          },
+        ]).then((result) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Have a nice day!',
+            confirmButtonText: 'Lovely!'
+          })
+        })
+
 
         //toggle to sign in
         toggleActiveTab('signin-tab');
@@ -188,6 +210,8 @@
     } else {
       toggleActiveTab(tabIds[1]);
     }
+
+
   })
 
 </script>

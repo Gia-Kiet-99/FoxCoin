@@ -16,17 +16,24 @@ router.get('/auth', (req, res) => {
   res.render('user/auth', { title: 'Authentication', email });
 });
 
-router.post('/auth', async (req, res, next) => {
-  // console.log("Request body: " + req.body);
-  const email = req.body.email;
-  const password = req.body.password;
-  if (email) {
-  } else {
-    //sign in
-    const publicKey = req.body.publicKey;
-    // res.send({publicKey, password});
-    res.redirect('/wallet');
+//sign in
+router.post('/auth', async (req, res) => {
+  const { publicKey, password } = req.body;
+
+  const user = await usersModel.single(publicKey);
+  if (user) {
+    if (await bcryptUtil.verifyPassword(password, user.password)) {
+      //balance of wallet
+      // let balance = 0;
+      if (!req.session.user) {
+        req.session.user = user;
+      }
+      console.log("redirect to /wallet");
+      return res.redirect('/wallet');
+    }
   }
+
+  res.render('user/auth', { signin_message: "Invalid public key or password" });
 });
 
 module.exports = router;

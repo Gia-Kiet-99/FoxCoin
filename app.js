@@ -4,6 +4,7 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let cors = require('cors');
+const session = require("express-session");
 require('express-async-errors');
 
 let indexRouter = require('./routes/index.route');
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({ secret: "keyboard cat", resave: true, saveUninitialized: true }));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
@@ -55,7 +57,7 @@ let wsServer;
 if (!wsServer) {
   wsServer = new WebSocket.Server({ port: p2pPort });
   wsServer.on('connection', (client) => {
-    console.log("Connected");
+    console.log("Connected: " + wsServer.clients.size);
     client.send('Hello client')
     client.onmessage = function (message) {
       console.log("Received from socket client: " + message.data);
