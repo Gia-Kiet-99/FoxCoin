@@ -36,4 +36,10 @@ router.post('/auth', async (req, res) => {
   res.render('user/auth', { signin_message: "Invalid public key or password" });
 });
 
+//sign out
+router.get('/signout', (req, res) => {
+  req.session.user = null;
+  res.redirect('/users/auth');
+})
+
 module.exports = router;

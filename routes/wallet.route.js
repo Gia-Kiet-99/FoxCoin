@@ -4,7 +4,7 @@ const router = express.Router();
 const authMdw = require('../middleware/auth.mdw');
 
 
-router.get('/', (req, res) => {
+router.get('/', authMdw, (req, res) => {
   const user = req.session.user;
   console.log("/wallet route");
   console.log(user);
