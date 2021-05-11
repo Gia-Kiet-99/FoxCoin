@@ -44,7 +44,7 @@ function initConnection(ws) {
   // sockets.push(ws);
   initMessageHandler(ws);
   initErrorHandler(ws);
-  // write(ws, queryChainLengthMsg());
+  write(ws, queryChainLengthMsg());
 
   // // query transaction pool only some time after chain query
   // setTimeout(() => {

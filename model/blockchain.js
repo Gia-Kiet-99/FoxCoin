@@ -3,6 +3,7 @@ const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
 const _ = require('lodash');
 
+const db = require('../util/db');
 const { broadcastLatest, broadcastTransactionPool } = require('./p2p');
 const { COINBASE_AMOUNT, processTransactions, getCoinbaseTransaction } = require('./transaction');
 const { createTransaction, findUnspentTxOuts, getBalance, getPrivateFromWallet, getPublicFromWallet } = require('./wallet');
@@ -46,8 +47,20 @@ const genesisBlock = new Block(0,
   "", 1620142630, [genesisTransaction], 16, 69586
 );
 
-let blockchain = [genesisBlock];
-let unspentTxOuts = processTransactions(blockchain[0].data, [], 0);
+// GET blockchain data from DATABASE
+let blockchain = [];
+let unspentTxOuts = [];
+db('block').then(blocks => {
+  // console.log(blocks);
+  for (const block of blocks) {
+    blockchain.push({ ...block, data: JSON.parse(block.data) });
+  }
+  console.log(blockchain);
+  for (const block of blockchain) {
+    unspentTxOuts = [...processTransactions(block.data, unspentTxOuts, block.index)]
+  }
+  console.log(unspentTxOuts);
+})
 
 function getUnspentTxOuts() {
   return _.cloneDeep(unspentTxOuts);

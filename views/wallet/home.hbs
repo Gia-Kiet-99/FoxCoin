@@ -84,8 +84,8 @@
     ws.onopen = function () {
       console.log('Onopen');
     }
-    ws.onmessage = function (message) {
-      console.log("Received message: " + message);
+    ws.onmessage = function (event) {
+      console.log("Received message: " + event.data);
     }
   }
   setupWS();
