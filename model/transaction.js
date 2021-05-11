@@ -80,29 +80,41 @@ const validateTransaction = (transaction, aUnspentTxOuts) => {
     console.log('invalid tx id: ' + transaction.id);
     return false;
   }
-  const hasValidTxIns = transaction.txIns
-    .map((txIn) => validateTxIn(txIn, transaction, aUnspentTxOuts))
-    .reduce((a, b) => a && b, true);
 
-  if (!hasValidTxIns) {
-    console.log('some of the txIns are invalid in tx: ' + transaction.id);
+  // check if is reward transaction
+  if (transaction.txIns.length === 1 && transaction.txOuts.length === 1) {
+    //check if user is exists
+    if (!(aUnspentTxOuts.find(uTxO => uTxO.address === transaction.txOuts[0].address))) {
+      if (transaction.txOuts[0].amount === COINBASE_AMOUNT) {
+        return true;
+      }
+    }
     return false;
+  } else {
+    const hasValidTxIns = transaction.txIns
+      .map((txIn) => validateTxIn(txIn, transaction, aUnspentTxOuts))
+      .reduce((a, b) => a && b, true);
+
+    if (!hasValidTxIns) {
+      console.log('some of the txIns are invalid in tx: ' + transaction.id);
+      return false;
+    }
+
+    const totalTxInValues = transaction.txIns
+      .map((txIn) => getTxInAmount(txIn, aUnspentTxOuts))
+      .reduce((a, b) => (a + b), 0);
+
+    const totalTxOutValues = transaction.txOuts
+      .map((txOut) => txOut.amount)
+      .reduce((a, b) => (a + b), 0);
+
+    if (totalTxOutValues !== totalTxInValues) {
+      console.log('totalTxOutValues !== totalTxInValues in tx: ' + transaction.id);
+      return false;
+    }
+    
+    return true;
   }
-
-  const totalTxInValues = transaction.txIns
-    .map((txIn) => getTxInAmount(txIn, aUnspentTxOuts))
-    .reduce((a, b) => (a + b), 0);
-
-  const totalTxOutValues = transaction.txOuts
-    .map((txOut) => txOut.amount)
-    .reduce((a, b) => (a + b), 0);
-
-  if (totalTxOutValues !== totalTxInValues) {
-    console.log('totalTxOutValues !== totalTxInValues in tx: ' + transaction.id);
-    return false;
-  }
-
-  return true;
 };
 
 const validateBlockTransactions = (aTransactions, aUnspentTxOuts, blockIndex) => {
@@ -169,7 +181,7 @@ const validateCoinbaseTx = (transaction, blockIndex) => {
 
 const validateTxIn = (txIn, transaction, aUnspentTxOuts) => {
   const referencedUTxOut =
-    aUnspentTxOuts.find((uTxO) => uTxO.txOutId === txIn.txOutId && uTxO.txOutId === txIn.txOutId);
+    aUnspentTxOuts.find((uTxO) => uTxO.txOutId === txIn.txOutId && uTxO.txOutIndex === txIn.txOutIndex);
   if (referencedUTxOut == null) {
     console.log('referenced txOut not found: ' + JSON.stringify(txIn));
     return false;

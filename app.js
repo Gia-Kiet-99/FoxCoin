@@ -51,23 +51,27 @@ app.use(function(err, req, res, next) {
 
 const PORT = 3000;
 
-const WebSocket = require('ws');
-let p2pPort = process.env.P2P_PORT || 45678;
-let wsServer;
-if (!wsServer) {
-  wsServer = new WebSocket.Server({ port: p2pPort });
-  wsServer.on('connection', (client) => {
-    console.log("Connected: " + wsServer.clients.size);
-    client.send('Hello client')
-    client.onmessage = function (message) {
-      console.log("Received from socket client: " + message.data);
-    }
-    client.onclose = function() {
-      console.log("Disconnected");
-    }
-  })
-  console.log("Websocket server is running at " + p2pPort);
-}
+const p2pModel = require('./model/p2p');
+
+p2pModel.initP2PServer(45678);
+
+// const WebSocket = require('ws');
+// let p2pPort = process.env.P2P_PORT || 45678;
+// let wsServer;
+// if (!wsServer) {
+//   wsServer = new WebSocket.Server({ port: p2pPort });
+//   wsServer.on('connection', (client) => {
+//     console.log("Connected: " + wsServer.clients.size);
+//     client.send('Hello client')
+//     client.onmessage = function (message) {
+//       console.log("Received from socket client: " + message.data);
+//     }
+//     client.onclose = function() {
+//       console.log("Disconnected");
+//     }
+//   })
+//   console.log("Websocket server is running at " + p2pPort);
+// }
 
 app.listen(3000, function() {
   console.log(`Http server is running at port ${PORT}`);

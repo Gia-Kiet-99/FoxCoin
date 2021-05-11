@@ -44,9 +44,9 @@
   <div class="container-fluid">
     <header>
       <nav class="navbar fixed-top navbar-light bg-white">
-        <a class="navbar-brand" href="#">
-          <img src="/public/images/fox.png" class="rounded-circle" width="36" height="36" alt="foxicon">
-          <strong>FOX</strong>
+        <a class="navbar-brand d-flex align-items-center" href="#">
+          <img src="/images/fox.png" class="rounded-circle" width="40" height="40" alt="foxicon">
+          &nbsp;&nbsp;<strong style="color: #b64900;">FoxWallet</strong>
         </a>
       </nav>
     </header>
@@ -54,169 +54,41 @@
     <main>
       <div class="row" style="height: 100vh;">
         <div class="col-sm-2 p-0">
-          <nav class="navbar p-0" style="margin-top: 75px;">
+          <nav class="navbar p-0" style="margin-top: 85px;">
             <ul style="list-style-type: none;width: 100%;margin: 0;padding: 0;">
               <li>
-                <a href="#" class="text-left sidebar-button p-3 pl-4">
+                <a href="#" class="text-left sidebar-button active-side-bar p-3 pl-4">
                   <i class="fa fa-home" style="font-size: 24px;" aria-hidden="true"></i>
-                  &nbsp;&nbsp;<strong>Home</strong>
+                  &nbsp;&nbsp;<strong>Wallet</strong>
                 </a>
               </li>
               <li>
-                <a href="#" class="text-left sidebar-button active-side-bar p-3 pl-4" role="button">
+                <a href="#" class="text-left sidebar-button p-3 pl-4" role="button">
                   <i class="fab fa-wpexplorer" style="font-size: 24px;"></i>
                   &nbsp;&nbsp;<strong>Explorer</strong>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="text-left sidebar-button p-3 pl-4" role="button">
+                  <i class="fas fa-sign-out-alt" style="font-size: 24px;"></i>
+                  &nbsp;&nbsp;<strong>Sign out</strong>
                 </a>
               </li>
             </ul>
           </nav>
         </div>
-        <div class="col-sm-10 bg-light">
-          <div class="row d-flex" style="margin-top: 75px; margin-left: 75px; margin-right: 75px;">
-            <div class="mx-5 my-3 rounded-lg info" style="color: #eee;">
-              <div class="card border-0">
-                <div class="card-header" style="background-color: #8c7ae6;">
-                  <h5 style="margin-bottom: 0;"><strong>Latest blocks</strong></h5>
-                  <small>The most recently mined blocks</small>
-                </div>
-                <div class="card-body">
-                  <table class="table table-borderless">
-                    <thead>
-                      <tr>
-                        <th scope="col">Height</th>
-                        <th scope="col">Mined</th>
-                        <th scope="col">Miner</th>
-                        <th scope="col">Size</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="card-footer text-muted border-0 bg-white">
-                  <button type="button" name="" id="" class="button">
-                    View All locks <i class="fas fa-arrow-right"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="mr-5 my-3 rounded-lg info" style="color: #eee;background-color: #6c5ce7;">
-              <div class="card border-0">
-                <div class="card-header" style="background-color: #8c7ae6;">
-                  <h5 style="margin-bottom: 0;"><strong>Latest Transactions</strong></h5>
-                  <small>The most recently published unconfirmed transactions</small>
-                </div>
-                <div class="card-body">
-                  <table class="table table-borderless">
-                    <thead>
-                      <tr>
-                        <th scope="col">Hash</th>
-                        <th scope="col">Time</th>
-                        <th scope="col">Amount (FXC)</th>
-                        <th scope="col">Handle</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td colspan="2">Larry the Bird</td>
-                        <td>@twitter</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="card-footer text-muted border-0 bg-white">
-                  <button type="button" name="" id="" class="button">
-                    View All Transactions <i class="fas fa-arrow-right"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </main>
 
-    <!-- <footer class="m-0 p-0">
-      <div style="height: 200px; background-color: pink;margin: 0;padding: 0;">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://kit.fontawesome.com/5ab99f6a6e.js" crossorigin="anonymous"></script>
+    <script>
 
-      </div>
-    </footer> -->
-
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/dt-1.10.24/datatables.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-  <script src="https://kit.fontawesome.com/5ab99f6a6e.js" crossorigin="anonymous"></script>
-  <script>
-
-  </script>
+    </script>
 </body>
 
 </html>

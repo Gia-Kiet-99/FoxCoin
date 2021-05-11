@@ -26,11 +26,11 @@ let server;
 function initP2PServer(port) {
   if (!server) {
     server = new WebSocket.Server({ port: port });
-    server.on('connection', (ws) => {
+    server.on('connection', (ws, req) => {
       initConnection(ws);
-      console.log("Connect to client");
+      console.log("Connect to client" + req.headers.origin);
     });
-    console.log("Listening websocket p2p port on: " + port);
+    console.log("Websoket server is running at port: " + port);
   }
   return server;
 }
@@ -117,6 +117,7 @@ function initErrorHandler(ws) {
 
 /* ------------ Send message --------------*/
 function write(ws, message) {
+  console.log("message", JSON.stringify(message));
   ws.send(JSON.stringify(message));
 }
 

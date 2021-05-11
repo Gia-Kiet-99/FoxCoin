@@ -58,6 +58,9 @@ const isValidTxForPool = (tx, aTtransactionPool) => {
   };
 
   for (const txIn of tx.txIns) {
+    if (txIn.txOutId === "") {
+      continue;
+    }
     if (containsTxIn(txPoolIns, txIn)) {
       console.log('txIn already found in the txPool');
       return false;

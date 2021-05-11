@@ -5,6 +5,10 @@
         <img src="/images/fox.png" class="rounded-circle" width="40" height="40" alt="foxicon">
         &nbsp;&nbsp;<strong style="color: #b64900;">FoxWallet</strong>
       </a>
+      <a href="/users/signout" class="text-left sidebar-button d-flex align-items-center mx-3" role="button">
+        <i class="fas fa-sign-out-alt" style="font-size: 24px;"></i>
+        &nbsp;&nbsp;<strong>Sign out</strong>
+      </a>
     </nav>
   </header>
 
@@ -16,19 +20,13 @@
             <li>
               <a href="/wallet" class="text-left sidebar-button active-side-bar p-3 pl-4">
                 <i class="fa fa-home" style="font-size: 24px;" aria-hidden="true"></i>
-                &nbsp;&nbsp;<strong>Home</strong>
+                &nbsp;&nbsp;<strong>Wallet</strong>
               </a>
             </li>
             <li>
               <a href="/explorer" class="text-left sidebar-button p-3 pl-4" role="button">
                 <i class="fab fa-wpexplorer" style="font-size: 24px;"></i>
                 &nbsp;&nbsp;<strong>Explorer</strong>
-              </a>
-            </li>
-            <li>
-              <a href="/users/signout" class="text-left sidebar-button p-3 pl-4" role="button">
-                <i class="fas fa-sign-out-alt" style="font-size: 24px;"></i>
-                &nbsp;&nbsp;<strong>Sign out</strong>
               </a>
             </li>
           </ul>
@@ -40,14 +38,14 @@
             <i class="far fa-id-badge" style="font-size: 48px;"></i>
             <div class="ml-4">
               <h5>Address</h5>
-              <p style="max-width: 100%;">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+              <p style="max-width: 100%;">{{address}}</p>
             </div>
           </div>
           <div class="d-flex p-4 mr-5 my-3 rounded-lg info" style="color: #eee;background-color: #6c5ce7;">
             <i class="fas fa-wallet" style="font-size: 48px;"></i>
             <div class="ml-4">
               <h5>Balance</h5>
-              <p><strong style="font-size: larger;">0</strong> Fox</p>
+              <p><strong style="font-size: larger;">{{balance}}</strong> Fox</p>
             </div>
           </div>
         </div>
@@ -79,3 +77,16 @@
     </div>
   </main>
 </div>
+
+<script>
+  function setupWS() {
+    const ws = new WebSocket('ws://localhost:45678');
+    ws.onopen = function () {
+      console.log('Onopen');
+    }
+    ws.onmessage = function (message) {
+      console.log("Received message: " + message);
+    }
+  }
+  setupWS();
+</script>

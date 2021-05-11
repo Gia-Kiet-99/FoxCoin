@@ -42,15 +42,15 @@ const genesisTransaction = {
   'id': '230e3648aab43f05c3156593142b19e3cfb11e9fe02e906b8eba8e83fd720cd1'
 };
 const genesisBlock = new Block(0,
-  "c8f16271df1043e9d3ef1b7a425da2957e27a0afc7841a3f11b6c4a331f52b09",
-  "", 1620142630, [genesisTransaction], 0, 0
+  "00007be28019f2541ff830240da685f6899dada1870cadb812f9eeed9cc7a854",
+  "", 1620142630, [genesisTransaction], 16, 69586
 );
 
 let blockchain = [genesisBlock];
 let unspentTxOuts = processTransactions(blockchain[0].data, [], 0);
 
 function getUnspentTxOuts() {
-  _.cloneDeep(unspentTxOuts);
+  return _.cloneDeep(unspentTxOuts);
 }
 
 // and txPool should be only updated at the same time
@@ -69,8 +69,26 @@ function calculateHashForBlock(block) {
     block.difficulty, block.nonce);
 }
 
+const hexToBinary = (s) => {
+  let ret = '';
+  const lookupTable = {
+    '0': '0000', '1': '0001', '2': '0010', '3': '0011', '4': '0100',
+    '5': '0101', '6': '0110', '7': '0111', '8': '1000', '9': '1001',
+    'a': '1010', 'b': '1011', 'c': '1100', 'd': '1101',
+    'e': '1110', 'f': '1111'
+  };
+  for (let i = 0; i < s.length; i = i + 1) {
+    if (lookupTable[s[i]]) {
+      ret += lookupTable[s[i]];
+    } else {
+      return null;
+    }
+  }
+  return ret;
+};
+
 function hashMatchesDifficulty(hash, difficulty) {
-  const hashInBinary = parseInt(hash, 16).toString(2).padStart(8, "0");
+  const hashInBinary = hexToBinary(hash);
   const requiredPrefix = '0'.repeat(difficulty);
   return hashInBinary.startsWith(requiredPrefix);
 }
@@ -301,5 +319,5 @@ module.exports = {
   Block, getBlockChain, getUnspentTxOuts, getLatestBlock, sendTransaction,
   generateRawNextBlock, generateNextBlock, addBlockToChain,
   handleReceivedTransaction, getMyUnspentTransactionOutputs,
-  getAccountBalance, isValidBlockStructure, replaceChain
+  getAccountBalance, isValidBlockStructure, replaceChain, unspentTxOuts
 }

@@ -26,8 +26,9 @@ router.post('/auth', async (req, res) => {
       //balance of wallet
       // let balance = 0;
       if (!req.session.user) {
-        req.session.user = user;
+        req.session.user = {};
       }
+      req.session.user = {...user};
       console.log("redirect to /wallet");
       return res.redirect('/wallet');
     }
