@@ -8,8 +8,6 @@ const usersModel = require('../../model/users.model');
 const transactionModel = require('../../model/transaction');
 const blockModel = require('../../model/blockchain');
 const transactionPoolModel = require('../../model/transaction-pool');
-const p2pModel = require('../../model/p2p');
-const randomstring = require("randomstring");
 
 
 router.get('/:email', async (req, res) => {
@@ -31,26 +29,27 @@ router.post('/', async (req, res) => {
   const password = req.body.password;
   try {
     const key = walletModel.initWallet();
+    console.log(key);
     const hashPassword = await bcryptUtil.hashPassword(password);
 
     // save user info
     const ids = await usersModel.add({ email, address: key.publicKey, password: hashPassword });
-    console.log("ids: " + ids[0]);
+    // console.log("ids: " + ids[0]);
 
     // give user 25 coin -> send Transaction
     const address = key.publicKey;
     const newBlockIndex = blockModel.getLatestBlock().index + 1;
 
     console.log("Create coinbase tx");
-    const coinbaseTx = transactionModel.getCoinbaseTransaction(key.publicKey, newBlockIndex);
+    const coinbaseTx = transactionModel.getCoinbaseTransaction(address, newBlockIndex);
 
     console.log("Add transaction to pool");
     transactionPoolModel.addToTransactionPool(coinbaseTx, blockModel.getUnspentTxOuts());
 
     console.log("broadcast transaction pool");
-    p2pModel.broadcastTransactionPool();
+    blockModel.broadcastTransactionPool();
 
-    res.json(key);
+    return res.json(key);
   } catch (error) {
     console.log(error);
     res.status(400).json({

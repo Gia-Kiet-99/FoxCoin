@@ -10,26 +10,6 @@ let http = require('http');
 const WebSocket = require('ws');
 
 /**
- * Start websocket server
- */
-// let p2p = require('../model/p2p');
-// let p2pPort = process.env.P2P_PORT || 45678;
-// let wsServer;
-// if (!wsServer) {
-//   wsServer = new WebSocket.Server({ port: p2pPort });
-//   wsServer.on('connection', (client) => {
-//     console.log("Connected");
-//     client.onmessage = function (data) {
-//       console.log("Received from socket client: " + data);
-//     }
-//     client.onclose = function() {
-//       console.log("Disconnected");
-//     }
-//   })
-// }
-// p2p.initP2PServer(p2pPort);
-
-/**
  * Get port from environment and store in Express.
  */
 

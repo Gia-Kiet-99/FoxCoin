@@ -5,7 +5,7 @@ const _ = require('lodash');
 
 const { getPublicKey, getTransactionId, signTxIn, Transaction,
   TxIn, TxOut, UnspentTxOut } = require('./transaction');
-
+const IOUtils = require('../util/io');
 
 const ec = new EC('secp256k1');
 // const privateKeyLocation = 'node/wallet/private_key';
@@ -28,18 +28,27 @@ const generatePrivateKey = () => {
 };
 
 const initWallet = () => {
-  // // let's not override existing private keys
-  // if (existsSync(privateKeyLocation)) {
-  //   return;
-  // }
-  // const newPrivateKey = generatePrivateKey();
+  try {
+    const key = ec.genKeyPair();
+    const privateKey = key.getPrivate('hex');
+    const publicKey = key.getPublic('hex');
 
-  // fs.writeFileSync(privateKeyLocation, newPrivateKey);
-  // console.log('new wallet with private key created');
-  const key = ec.genKeyPair();
-  const privateKey = key.getPrivate('hex');
-  const publicKey = key.getPublic('hex');
-  return { privateKey, publicKey };
+    //append new key to wallet.json
+    let keys = IOUtils.readJSON('database/wallet.json');
+    // console.log(keys);
+    if (!keys) {
+      keys = [];
+    } else {
+      keys = JSON.parse(keys);
+    }
+    keys.push({ privateKey, publicKey });
+
+    IOUtils.writeJSON('database/wallet.json', JSON.stringify(keys));
+    return { privateKey, publicKey };
+  } catch (error) {
+    console.log(error);
+    throw Error(error);
+  }
 };
 
 const deleteWallet = () => {

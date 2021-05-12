@@ -2,10 +2,8 @@ const WebSocket = require('ws');
 
 const { getLatestBlock, getBlockChain, handleReceivedTransaction,
   isValidBlockStructure, addBlockToChain, replaceChain } = require('./blockchain');
-const { transaction } = require('./transaction');
 const { getTransactionPool } = require('./transaction-pool');
 
-// const sockets = [];
 
 const MessageType = {
   QUERY_LATEST: 0,
@@ -26,9 +24,9 @@ let server;
 function initP2PServer(port) {
   if (!server) {
     server = new WebSocket.Server({ port: port });
-    server.on('connection', (ws, req) => {
+    server.on('connection', (ws) => {
       initConnection(ws);
-      console.log("Connect to client" + req.headers.origin);
+      console.log("Connect to client " + ws.url);
     });
     console.log("Websoket server is running at port: " + port);
   }
