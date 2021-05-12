@@ -12,6 +12,8 @@ let usersRouter = require('./routes/users.route');
 let walletRouter = require('./routes/wallet.route');
 let explorerRouter = require('./routes/explorer.route');
 let userApiRouter = require('./routes/api/userApi.route');
+let walletApiRouter = require('./routes/api/walletApi.route');
+let blockApiRouter = require('./routes/api/blockApi.route');
 
 let app = express();
 
@@ -32,6 +34,8 @@ app.use('/users', usersRouter);
 app.use('/wallet', walletRouter);
 app.use('/explorer', explorerRouter);
 app.use('/api/users', userApiRouter);
+app.use('/api/wallet', walletApiRouter);
+app.use('/api/blocks', blockApiRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

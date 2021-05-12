@@ -7,6 +7,7 @@ const db = require('../util/db');
 const { COINBASE_AMOUNT, processTransactions, getCoinbaseTransaction } = require('./transaction');
 const { createTransaction, findUnspentTxOuts, getBalance, getPrivateFromWallet, getPublicFromWallet } = require('./wallet');
 const { addToTransactionPool, getTransactionPool, updateTransactionPool } = require('./transaction-pool');
+const IOUtil = require('../util/io');
 
 class Block {
   /**
@@ -32,6 +33,7 @@ class Block {
 
 const BLOCK_GENERATION_INTERVAL = 60; // second
 const DIFFICULTY_ADJUSTMENT_INTERVAL = 10; // block
+const BLOCKCHAIN_LOCATION = "database/blockchain.json";
 
 const genesisTransaction = {
   'txIns': [{ 'signature': '', 'txOutId': '', 'txOutIndex': 0 }],
@@ -198,21 +200,30 @@ function generateRawNextBlock(blockData) {
   // const hash = calculateHash(index, previousHash, timestamp, blockData);
   const difficulty = getDifficulty(getBlockChain());
   const newBlock = findBlock(index, previousHash, timestamp, blockData, difficulty);
+  console.log(newBlock);
 
+  console.log("Adding block to chain");
   if (addBlockToChain(newBlock)) {
+    console.log("Broadcast latest block");
+    //save new blockchain to file
+    IOUtil.writeJSON(BLOCKCHAIN_LOCATION, JSON.stringify(blockchain));
+    //broadcast latest block
     broadcastLatest();
     return newBlock;
   }
+  console.log("Add block to chain fail");
   return null;
 }
 
-function generateNextBlock() {
-  const myAddress = getPublicFromWallet();
+function generateNextBlock(myAddress) {
+  // const myAddress = getPublicFromWallet();
+  console.log("Create coinbase transaction");
   const newBlockIndex = getLatestBlock().index + 1;
 
   const coinbaseTx = getCoinbaseTransaction(myAddress, newBlockIndex);
   const blockData = [coinbaseTx].concat(getTransactionPool());
 
+  console.log("Mining new block...");
   return generateRawNextBlock(blockData);
 }
 
@@ -239,11 +250,15 @@ function getAccountBalance() {
   return getBalance(myAddress, getUnspentTxOuts());
 }
 
-function sendTransaction(receivedAddress, amount) {
-  const tx = createTransaction(receivedAddress, amount, getPrivateFromWallet(), getUnspentTxOuts(), getTransactionPool());
-  addToTransactionPool(tx, getUnspentTxOuts());
-  broadcastTransactionPool();
-  return tx;
+function sendTransaction(myAddress, receivedAddress, amount) {
+  const privateKey = getPrivateFromWallet(myAddress);
+  let newTransaction = null;
+  if (privateKey) {
+    newTransaction = createTransaction(myAddress, receivedAddress, amount, privateKey, getUnspentTxOuts(), getTransactionPool());
+    addToTransactionPool(tx, getUnspentTxOuts());
+    broadcastTransactionPool();
+  }
+  return newTransaction;
 }
 
 function getBlockChain() {
@@ -520,6 +535,7 @@ function handleBlockChainResponse(receivedBlocks) {
     if (latestBlockHeld.hash === latestBlockReceived.previousHash) {
       if (addBlockToChain(latestBlockReceived)) {
         console.log("Add new block to chain successfully!");
+        IOUtil.writeJSON(BLOCKCHAIN_LOCATION, JSON.stringify(blockchain));
         console.log("##### Broadcast to response new block to network");
         broadcast(responseLatestMsg());
       }
@@ -531,6 +547,7 @@ function handleBlockChainResponse(receivedBlocks) {
       console.log("Received blockchain is longer than current blockchain");
       replaceChain(receivedBlocks);
       console.log("Replace blockchain successfully!");
+      IOUtil.writeJSON(BLOCKCHAIN_LOCATION, JSON.stringify(blockchain));
     }
   } else {
     console.log("Received blockchain is not longer than your blockchain. Do nothing");

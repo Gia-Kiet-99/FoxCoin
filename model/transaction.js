@@ -1,6 +1,7 @@
 const SHA256 = require('crypto-js').SHA256;
 const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
+const RandomString = require('randomstring');
 
 const COINBASE_AMOUNT = 50;
 
@@ -89,32 +90,33 @@ const validateTransaction = (transaction, aUnspentTxOuts) => {
         return true;
       }
     }
-    return false;
-  } else {
-    const hasValidTxIns = transaction.txIns
-      .map((txIn) => validateTxIn(txIn, transaction, aUnspentTxOuts))
-      .reduce((a, b) => a && b, true);
-
-    if (!hasValidTxIns) {
-      console.log('some of the txIns are invalid in tx: ' + transaction.id);
-      return false;
-    }
-
-    const totalTxInValues = transaction.txIns
-      .map((txIn) => getTxInAmount(txIn, aUnspentTxOuts))
-      .reduce((a, b) => (a + b), 0);
-
-    const totalTxOutValues = transaction.txOuts
-      .map((txOut) => txOut.amount)
-      .reduce((a, b) => (a + b), 0);
-
-    if (totalTxOutValues !== totalTxInValues) {
-      console.log('totalTxOutValues !== totalTxInValues in tx: ' + transaction.id);
-      return false;
-    }
-    
-    return true;
+    // return false;
   }
+  // else {
+  const hasValidTxIns = transaction.txIns
+    .map((txIn) => validateTxIn(txIn, transaction, aUnspentTxOuts))
+    .reduce((a, b) => a && b, true);
+
+  if (!hasValidTxIns) {
+    console.log('some of the txIns are invalid in tx: ' + transaction.id);
+    return false;
+  }
+
+  const totalTxInValues = transaction.txIns
+    .map((txIn) => getTxInAmount(txIn, aUnspentTxOuts))
+    .reduce((a, b) => (a + b), 0);
+
+  const totalTxOutValues = transaction.txOuts
+    .map((txOut) => txOut.amount)
+    .reduce((a, b) => (a + b), 0);
+
+  if (totalTxOutValues !== totalTxInValues) {
+    console.log('totalTxOutValues !== totalTxInValues in tx: ' + transaction.id);
+    return false;
+  }
+
+  return true;
+  // }
 };
 
 const validateBlockTransactions = (aTransactions, aUnspentTxOuts, blockIndex) => {
@@ -198,6 +200,14 @@ const getTxInAmount = (txIn, aUnspentTxOuts) => {
 
 const findUnspentTxOut = (transactionId, index, aUnspentTxOuts) => {
   return aUnspentTxOuts.find((uTxO) => uTxO.txOutId === transactionId && uTxO.txOutIndex === index);
+};
+
+const createSignupRewardTransaction = (address, blockIndex) => {
+  const txIn = new TxIn(RandomString.generate({ length: 64, charset: 'hex' }), blockIndex, "");
+  const trans = new Transaction("", [txIn], [new TxOut(address, COINBASE_AMOUNT)]);
+  trans.id = getTransactionId(trans);
+
+  return trans;
 };
 
 const getCoinbaseTransaction = (address, blockIndex) => {
@@ -355,7 +365,7 @@ const isValidAddress = (address) => {
 };
 
 module.exports = {
-  processTransactions, signTxIn, getTransactionId,
+  processTransactions, signTxIn, getTransactionId, createSignupRewardTransaction,
   UnspentTxOut, TxIn, TxOut, getCoinbaseTransaction, getPublicKey,
   Transaction, validateTransaction, COINBASE_AMOUNT, isValidAddress, hasDuplicates
 }

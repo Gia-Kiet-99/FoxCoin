@@ -32,6 +32,7 @@
           </ul>
         </nav>
       </div>
+
       <div class="col-sm-10 bg-light">
         <div class="row d-flex" style="margin-top: 75px; margin-left: 75px; margin-right: 75px;">
           <div class="d-flex p-4 mx-5 my-3 rounded-lg info" style="color: #eee; background-color: #8c7ae6;">
@@ -45,10 +46,11 @@
             <i class="fas fa-wallet" style="font-size: 48px;"></i>
             <div class="ml-4">
               <h5>Balance</h5>
-              <p><strong style="font-size: larger;">{{balance}}</strong> Fox</p>
+              <p><strong id="balance" style="font-size: larger;">{{balance}}</strong> Fox</p>
             </div>
           </div>
         </div>
+
         <div class="row" style="margin: 20px 125px; height: 100px;">
           <div class="col-sm-12 rounded-lg bg-white p-0">
             <div class="card" style="border: none; border-left: 3px solid #8c7ae6;">
@@ -56,37 +58,207 @@
                 <h4><strong style="color: #555">Send Transaction</strong></h4>
               </div>
               <div class="card-body">
-                <form action="#" method="POST">
-                  <div class="form-row mx-4 mb-4">
-                    <div class="form-group col-md-4">
-                      <label for="amount"><strong style="color: #555;">Amount</strong></label>
-                      <input type="number" name="amount" class="form-control" id="amount" min="0" placeholder="Amount">
-                    </div>
-                    <div class="form-group col-md-8">
-                      <label for="address"><strong style="color: #555;">Address</strong></label>
-                      <input type="text" name="address" class="form-control" id="address" placeholder="Address">
-                    </div>
-                    <button type="submit" class="btn mt-1"
-                      style="background-color: #6c5ce7; color: #eee"><strong>SEND</strong></button>
-                </form>
+                <div class="form-row mx-4 mb-4">
+                  <div class="form-group col-md-4">
+                    <label for="amount"><strong style="color: #555;">Amount</strong></label>
+                    <input type="number" name="amount" class="form-control" id="amount" min="0" placeholder="Amount"
+                      onchange="validateAmount('{{address}}', this.value)" aria-describedby="amountHelp">
+                    <small id="amountHelp" class="form-text text-muted"></small>
+                  </div>
+                  <div class="form-group col-md-8">
+                    <label for="address"><strong style="color: #555;">Address</strong></label>
+                    <input type="text" name="address" class="form-control" id="address" placeholder="Address"
+                      aria-describedby="addressHelp" onchange="validateAddress('{{address}}', this.value)">
+                    <small id="addressHelp" class="form-text text-muted"></small>
+                  </div>
+                  <button type="submit" class="btn mt-1" onclick="sendTransaction('{{address}}')"
+                    style="background-color: #6c5ce7; color: #eee"><strong>SEND</strong></button>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <div class="row" style="margin: 200px 125px;">
+          <div class="col-sm-12 rounded-lg bg-white p-0">
+            <div class="card" style="border: none; border-left: 3px solid #8c7ae6;">
+              <div class="card-header bg-white border-0" style="background-color: pink;">
+                <h4><strong style="color: #555;">Transaction pool</strong></h4>
+              </div>
+              <div class="card-body">
+                <div class="mx-4 mb-4">
+                  <table class="table table-borderless">
+                    <thead>
+                      <tr>
+                        <th scope="col">Hash</th>
+                        <th scope="col">Receiver</th>
+                        <th scope="col">Amount (FXC)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="table-rows">
+                      {{#each transactionPool}}
+                      <tr>
+                        <th scope="row">{{this.id}}</th>
+                        <td>{{this.receiver}}</td>
+                        <td>{{this.amount}}</td>
+                      </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                  <button id="mine-button" class="btn mt-1" onclick="mineBlock('{{address}}')"
+                    style="background-color: #6c5ce7; color: #eee">
+                    <strong>MINE BLOCKS</strong>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </main>
 </div>
 
-{{!-- <script>
+<script>
+  const PORT = 3000;
+
+  const MessageType = {
+    QUERY_LATEST: 0,
+    QUERY_ALL: 1,
+    RESPONSE_BLOCKCHAIN: 2,
+    QUERY_TRANSACTION_POOL: 3,
+    RESPONSE_TRANSACTION_POOL: 4
+  }
+
   function setupWS() {
     const ws = new WebSocket('ws://localhost:45678');
     ws.onopen = function () {
       console.log('Onopen');
     }
     ws.onmessage = function (event) {
+      const message = JSON.parse(event.data);
+      const data = JSON.parse(message.data);
+      switch (message.type) {
+        case MessageType.RESPONSE_BLOCKCHAIN:
+          break;
+        case MessageType.RESPONSE_TRANSACTION_POOL:
+          let rows = '';
+          for (const tx of data) {
+            rows += `<tr>
+                      <th scope="row">${tx.id}</th>
+                      <td>${tx.txOuts[0].address}</td>
+                      <td>${tx.txOuts[0].amount}</td>
+                    </tr>`
+          }
+          $('#table-rows').html(rows);
+          break;
+        default:
+          break;
+      }
       console.log("Received message: " + event.data);
     }
   }
   setupWS();
-</script> --}}
+
+  function validateAddress(myAddress, address) {
+    if (myAddress === address) {
+      $('#addressHelp').text("We don't do that here");
+    } else {
+      const ret = /[0-9a-f]{130}/.test(address);
+      if (ret === false) {
+        $('#addressHelp').text('Address is 130 characters long and is in hex format');
+      } else {
+        $('#addressHelp').text('');
+      }
+    }
+  }
+
+  function validateAmount(myAddress, amount) {
+    if (amount && amount > 0) {
+      $.ajax({
+        url: `http://localhost:${PORT}/api/wallet/${myAddress}`,
+        type: 'GET'
+      }).done(data => {
+        console.log(data);
+        if (data.balance < amount) {
+          $('#amountHelp').text("You're too poor to send money to others");
+          return false;
+        }
+        $('#amountHelp').text("");
+        return true;
+      }).fail(error => {
+        $('#amountHelp').text("Server error");
+        return false;
+      })
+    } else {
+      $('#amountHelp').text("Enter valid amount");
+    }
+  }
+
+  function sendTransaction(myAddress) {
+    const receivedAddress = $('#address').val();
+    const amount = $('#amount').val();
+
+    if (validateAddress(myAddress, receivedAddress) && validateAmount(myAddress, amount)) {
+      //send transaction
+      const jsonToPost = JSON.stringify({ myAddress, receivedAddress, amount });
+      $.ajax({
+        url: `http://localhost:${PORT}/wallet/send`,
+        type: 'POST',
+        dataType: 'json',
+        data: jsonToPost,
+        contentType: 'application/json'
+      }).done(data => {
+        console.log(data);
+      }).fail(error => {
+        console.log(error);
+      })
+    }
+  }
+
+  function mineBlock(myAddress) {
+    if ($('#table-rows').html().trim()) {
+      $('#mine-button').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;&nbsp;Mining...')
+      $.ajax({
+        url: `http://localhost:${PORT}/api/blocks/mineBlock`,
+        type: 'POST',
+        dataType: 'json',
+        data: JSON.stringify({ myAddress: myAddress }),
+        contentType: 'application/json'
+      }).done(data => {
+        console.log(data);
+        Swal.fire({
+          icon: 'success',
+          title: "Congratulation! You've mined a block and got 50 coin",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        $('#balance').text(data.balance);
+        $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+      }).fail(error => {
+        console.log(error);
+        $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+      })
+    } else {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'bottom-start',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
+
+      Toast.fire({
+        icon: 'warning',
+        title: 'Transaction pool is empty'
+      })
+    }
+  }
+
+
+</script>

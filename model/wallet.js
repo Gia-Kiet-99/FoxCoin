@@ -8,18 +8,25 @@ const { getPublicKey, getTransactionId, signTxIn, Transaction,
 const IOUtils = require('../util/io');
 
 const ec = new EC('secp256k1');
-// const privateKeyLocation = 'node/wallet/private_key';
+const walletLocation = 'database/wallet.json';
 
-const getPrivateFromWallet = () => {
-  const buffer = fs.readFileSync(privateKeyLocation, 'utf8');
-  return buffer.toString();
+const getPrivateFromWallet = (publicKey) => {
+  const buffer = fs.readFileSync(walletLocation, 'utf8');
+  const keys = JSON.parse(buffer);
+
+  for (const key of keys) {
+    if (key.publicKey === publicKey) {
+      return key.privateKey;
+    }
+  }
+  return null;
 };
 
-const getPublicFromWallet = () => {
-  const privateKey = getPrivateFromWallet();
-  const key = ec.keyFromPrivate(privateKey, 'hex');
-  return key.getPublic().encode('hex');
-};
+// const getPublicFromWallet = () => {
+//   const privateKey = getPrivateFromWallet();
+//   const key = ec.keyFromPrivate(privateKey, 'hex');
+//   return key.getPublic().encode('hex');
+// };
 
 const generatePrivateKey = () => {
   const keyPair = ec.genKeyPair();
@@ -34,8 +41,7 @@ const initWallet = () => {
     const publicKey = key.getPublic('hex');
 
     //append new key to wallet.json
-    let keys = IOUtils.readJSON('database/wallet.json');
-    // console.log(keys);
+    let keys = IOUtils.readJSON(walletLocation);
     if (!keys) {
       keys = [];
     } else {
@@ -43,7 +49,7 @@ const initWallet = () => {
     }
     keys.push({ privateKey, publicKey });
 
-    IOUtils.writeJSON('database/wallet.json', JSON.stringify(keys));
+    IOUtils.writeJSON(walletLocation, JSON.stringify(keys));
     return { privateKey, publicKey };
   } catch (error) {
     console.log(error);
@@ -52,8 +58,8 @@ const initWallet = () => {
 };
 
 const deleteWallet = () => {
-  if (fs.existsSync(privateKeyLocation)) {
-    fs.unlinkSync(privateKeyLocation);
+  if (fs.existsSync(walletLocation)) {
+    fs.unlinkSync(walletLocation);
   }
 }
 
@@ -100,8 +106,8 @@ const filterTxPoolTxs = (unspentTxOuts, transactionPool) => {
   const removable = [];
 
   for (const unspentTxOut of unspentTxOuts) {
-    const txIn = txIns.find(aTxIn => aTxIn.txOutIndex === unspentTxOuts.txOutIndex
-      && aTxIn.txOutId === unspentTxOuts.txOutId);
+    const txIn = txIns.find(aTxIn => aTxIn.txOutIndex === unspentTxOut.txOutIndex
+      && aTxIn.txOutId === unspentTxOut.txOutId);
 
     if (txIn) {
       removable.push(unspentTxOut);
@@ -111,10 +117,10 @@ const filterTxPoolTxs = (unspentTxOuts, transactionPool) => {
   return _.without(unspentTxOuts, ...removable);
 }
 
-const createTransaction = (receiverAddress, amount,
+const createTransaction = (myAddress, receiverAddress, amount,
   privateKey, unspentTxOuts, txPool) => {
 
-  const myAddress = getPublicKey(privateKey);
+  // const myAddress = getPublicKey(privateKey);
   const myUnspentTxOutsA = unspentTxOuts.filter((uTxO) => uTxO.address === myAddress);
 
   // filter from unspentOutputs such inputs that are referenced in pool
@@ -139,6 +145,6 @@ const createTransaction = (receiverAddress, amount,
 };
 
 module.exports = {
-  createTransaction, getPublicFromWallet, deleteWallet, findUnspentTxOuts,
+  createTransaction, deleteWallet, findUnspentTxOuts,
   getPrivateFromWallet, getBalance, generatePrivateKey, initWallet
 };

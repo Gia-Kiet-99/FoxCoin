@@ -52,4 +52,6 @@
 
 // add().then(() => console.log("done"));
 
-const { getLatestBlock } = require('./model/blockchain')
+// const { getLatestBlock } = require('./model/blockchain')
+const RandomString = require('randomstring')
+console.log(RandomString.generate({length: 64, charset: 'hex'}));

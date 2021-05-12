@@ -47,40 +47,14 @@
                     </tr>
                   </thead>
                   <tbody>
+                    {{#each blockchain}}
                     <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
+                      <th scope="row">{{this.index}}</th>
+                      <td>{{this.timestamp}}</td>
+                      <td>{{this.miner}}</td>
+                      <td>{{this.size}}</td>
                     </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      <td>@fat</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td colspan="2">Larry the Bird</td>
-                      <td>@twitter</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      <td>@fat</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td colspan="2">Larry the Bird</td>
-                      <td>@twitter</td>
-                    </tr>
+                    {{/each}}
                   </tbody>
                 </table>
               </div>
@@ -102,46 +76,18 @@
                   <thead>
                     <tr>
                       <th scope="col">Hash</th>
-                      <th scope="col">Time</th>
+                      <th scope="col">Receiver</th>
                       <th scope="col">Amount (FXC)</th>
-                      {{!-- <th scope="col">Handle</th> --}}
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="table-rows">
+                    {{#each transactionPool}}
                     <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      {{!-- <td>@mdo</td> --}}
+                      <th scope="row">{{this.id}}</th>
+                      <td>{{this.receiver}}</td>
+                      <td>{{this.amount}}</td>
                     </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      {{!-- <td>@fat</td> --}}
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td colspan="2">Larry the Bird</td>
-                      {{!-- <td>@twitter</td> --}}
-                    </tr>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      {{!-- <td>@mdo</td> --}}
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Jacob</td>
-                      <td>Thornton</td>
-                      {{!-- <td>@fat</td> --}}
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td colspan="2">Larry the Bird</td>
-                      {{!-- <td>@twitter</td> --}}
-                    </tr>
+                    {{/each}}
                   </tbody>
                 </table>
               </div>
@@ -164,3 +110,45 @@
     </footer> -->
 
 </div>
+
+<script>
+  const MessageType = {
+    QUERY_LATEST: 0,
+    QUERY_ALL: 1,
+    RESPONSE_BLOCKCHAIN: 2,
+    QUERY_TRANSACTION_POOL: 3,
+    RESPONSE_TRANSACTION_POOL: 4
+  }
+
+  function setupWS() {
+    const ws = new WebSocket('ws://localhost:45678');
+    ws.onopen = function () {
+      console.log('Onopen');
+    }
+    ws.onmessage = function (event) {
+      const message = JSON.parse(event.data);
+      const data = JSON.parse(message.data);
+      switch (message.type) {
+        case MessageType.RESPONSE_BLOCKCHAIN:
+          break;
+        case MessageType.RESPONSE_TRANSACTION_POOL:
+          let rows = '';
+          for (const tx of data) {
+            rows += `<tr>
+                      <th scope="row">${tx.id}</th>
+                      <td>${tx.txOuts[0].address}</td>
+                      <td>${tx.txOuts[0].amount}</td>
+                    </tr>`
+          }
+          $('#table-rows').html(rows);
+          break;
+        default:
+          break;
+      }
+      console.log("Received message: " + event.data);
+    }
+  }
+  setupWS();
+
+
+</script>

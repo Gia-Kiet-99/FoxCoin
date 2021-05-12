@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
     const newBlockIndex = blockModel.getLatestBlock().index + 1;
 
     console.log("Create coinbase tx");
-    const coinbaseTx = transactionModel.getCoinbaseTransaction(address, newBlockIndex);
+    const coinbaseTx = transactionModel.createSignupRewardTransaction(address, newBlockIndex);
 
     console.log("Add transaction to pool");
     transactionPoolModel.addToTransactionPool(coinbaseTx, blockModel.getUnspentTxOuts());

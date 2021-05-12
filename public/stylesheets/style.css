@@ -92,3 +92,7 @@ a {
 .button:hover {
   border-color: #6c5ce7;
 }
+
+table {
+  table-layout: fixed;
+}
