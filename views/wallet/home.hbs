@@ -71,8 +71,10 @@
                       aria-describedby="addressHelp" onchange="validateAddress('{{address}}', this.value)">
                     <small id="addressHelp" class="form-text text-muted"></small>
                   </div>
-                  <button type="submit" class="btn mt-1" onclick="sendTransaction('{{address}}')"
-                    style="background-color: #6c5ce7; color: #eee"><strong>SEND</strong></button>
+                  <button class="btn mt-1" onclick="sendTransaction('{{address}}', {{balance}})"
+                    style="background-color: #6c5ce7; color: #eee">
+                    <strong>SEND</strong>
+                  </button>
                 </div>
               </div>
             </div>
@@ -164,6 +166,7 @@
   function validateAddress(myAddress, address) {
     if (myAddress === address) {
       $('#addressHelp').text("We don't do that here");
+      return false;
     } else {
       const ret = /[0-9a-f]{130}/.test(address);
       if (ret === false) {
@@ -171,6 +174,7 @@
       } else {
         $('#addressHelp').text('');
       }
+      return ret;
     }
   }
 
@@ -196,23 +200,39 @@
     }
   }
 
-  function sendTransaction(myAddress) {
+  function sendTransaction(myAddress, balance) {
     const receivedAddress = $('#address').val();
-    const amount = $('#amount').val();
+    const amount = parseInt($('#amount').val());
 
-    if (validateAddress(myAddress, receivedAddress) && validateAmount(myAddress, amount)) {
+    if (validateAddress(myAddress, receivedAddress) && balance >= amount) {
       //send transaction
-      const jsonToPost = JSON.stringify({ myAddress, receivedAddress, amount });
+      const jsonToPost = JSON.stringify({
+        myAddress: myAddress,
+        receivedAddress: receivedAddress,
+        amount: amount
+      });
       $.ajax({
-        url: `http://localhost:${PORT}/wallet/send`,
+        url: `http://localhost:${PORT}/api/wallet/send`,
         type: 'POST',
         dataType: 'json',
         data: jsonToPost,
         contentType: 'application/json'
       }).done(data => {
         console.log(data);
+        Swal.fire({
+          icon: 'success',
+          title: "Your transaction has been sent",
+          showConfirmButton: false,
+          timer: 1500
+        });
       }).fail(error => {
         console.log(error);
+        Swal.fire({
+          icon: 'error',
+          title: "Oops.. Something went wrong",
+          showConfirmButton: false,
+          timer: 1500
+        });
       })
     }
   }
@@ -252,7 +272,6 @@
           toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
       })
-
       Toast.fire({
         icon: 'warning',
         title: 'Transaction pool is empty'

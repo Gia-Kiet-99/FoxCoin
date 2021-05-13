@@ -49,7 +49,7 @@ const initWallet = () => {
     }
     keys.push({ privateKey, publicKey });
 
-    IOUtils.writeJSON(walletLocation, JSON.stringify(keys));
+    IOUtils.writeJSON(walletLocation, JSON.stringify(keys, null, 2));
     return { privateKey, publicKey };
   } catch (error) {
     console.log(error);

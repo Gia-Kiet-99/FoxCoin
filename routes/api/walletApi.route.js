@@ -9,6 +9,7 @@ router.post('/send', (req, res) => {
   const { myAddress, receivedAddress, amount } = req.body;
   console.log({ myAddress, receivedAddress, amount });
 
+  console.log('Sending transaction...');
   const transaction = blockModel.sendTransaction(myAddress, receivedAddress, amount);
   if (transaction) {
     res.json(transaction);
