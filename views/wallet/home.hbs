@@ -100,7 +100,7 @@
                     <tbody id="table-rows">
                       {{#each transactionPool}}
                       <tr>
-                        <th scope="row">{{this.id}}</th>
+                        <th class="transaction-id" scope="row">{{this.id}}</th>
                         <td>{{this.receiver}}</td>
                         <td>{{this.amount}}</td>
                       </tr>
@@ -148,7 +148,7 @@
           let rows = '';
           for (const tx of data) {
             rows += `<tr>
-                      <th scope="row">${tx.id}</th>
+                      <th class="transaction-id" scope="row">${tx.id}</th>
                       <td>${tx.txOuts[0].address}</td>
                       <td>${tx.txOuts[0].amount}</td>
                     </tr>`
@@ -237,9 +237,28 @@
     }
   }
 
+  function bottomAlert(icon, text) {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'bottom-start',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: false,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    })
+    Toast.fire({
+      icon: icon,
+      title: text
+    })
+  }
+
   function mineBlock(myAddress) {
     if ($('#table-rows').html().trim()) {
       $('#mine-button').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;&nbsp;Mining...')
+
       $.ajax({
         url: `http://localhost:${PORT}/api/blocks/mineBlock`,
         type: 'POST',
@@ -254,29 +273,33 @@
           showConfirmButton: false,
           timer: 1500
         });
+
         $('#balance').text(data.balance);
         $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+
+        console.log("Update transaction pool after mined");
+        updateTxPoolAfterMine(data.newBlock.data);
       }).fail(error => {
         console.log(error);
         $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+        bottomAlert('warning', 'Transaction pool is empty')
       })
     } else {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: 'bottom-start',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: false,
-        didOpen: (toast) => {
-          toast.addEventListener('mouseenter', Swal.stopTimer)
-          toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-      })
-      Toast.fire({
-        icon: 'warning',
-        title: 'Transaction pool is empty'
-      })
+      bottomAlert('warning', 'Transaction pool is empty')
     }
+  }
+
+  function updateTxPoolAfterMine(minedTransactions) {
+    const minedTransactionIds = minedTransactions.map(trans => trans.id);
+    const txPoolElements = document.getElementsByClassName('transaction-id');
+    const removableElements = [];
+
+    for (let i = 0; i < txPoolElements.length; i++) {
+      if (minedTransactionIds.find(id => id === txPoolElements[i].innerHTML)) {
+        removableElements.push(txPoolElements[i].parentNode);
+      }
+    }
+    removableElements.forEach(e => e.remove());
   }
 
 

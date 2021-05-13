@@ -220,14 +220,16 @@ function generateRawNextBlock(blockData) {
 }
 
 function generateNextBlock(myAddress) {
-  // const myAddress = getPublicFromWallet();
   const transactionPool = getTransactionPool();
+  /**
+   * only mine block if transaction pool is not empty
+   */
   if (transactionPool.length > 0) {
     console.log("Create coinbase transaction");
     const newBlockIndex = getLatestBlock().index + 1;
 
     const coinbaseTx = getCoinbaseTransaction(myAddress, newBlockIndex);
-    const blockData = [coinbaseTx].concat(getTransactionPool());
+    const blockData = [coinbaseTx].concat(transactionPool);
 
     console.log("Mining new block...");
     return generateRawNextBlock(blockData);
