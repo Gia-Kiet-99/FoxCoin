@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
 
 const blockModel = require('../model/blockchain');
@@ -19,7 +19,10 @@ router.get('/', (req, res) => {
       amount: tx.txOuts[0].amount
     }
   });
-  res.render('explorer/explorer', {blockchain, transactionPool});
+  res.render('explorer/explorer', {
+    blockchain: blockchain.reverse(),
+    transactionPool: transactionPool.reverse()
+  });
 })
 
 

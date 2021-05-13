@@ -46,7 +46,7 @@
                       <th scope="col">Size</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="block-rows">
                     {{#each blockchain}}
                     <tr>
                       <th scope="row">{{this.index}}</th>
@@ -80,10 +80,10 @@
                       <th scope="col">Amount (FXC)</th>
                     </tr>
                   </thead>
-                  <tbody id="table-rows">
+                  <tbody id="transaction-rows">
                     {{#each transactionPool}}
                     <tr>
-                      <th scope="row">{{this.id}}</th>
+                      <th class="transaction-id" scope="row">{{this.id}}</th>
                       <td>{{this.receiver}}</td>
                       <td>{{this.amount}}</td>
                     </tr>
@@ -130,17 +130,18 @@
       const data = JSON.parse(message.data);
       switch (message.type) {
         case MessageType.RESPONSE_BLOCKCHAIN:
+          updateBlockChain(data);
           break;
         case MessageType.RESPONSE_TRANSACTION_POOL:
-          let rows = '';
+          let rows = [];
           for (const tx of data) {
-            rows += `<tr>
-                      <th scope="row">${tx.id}</th>
+            rows.unshift(`<tr>
+                      <th class="transaction-id" scope="row">${tx.id}</th>
                       <td>${tx.txOuts[0].address}</td>
                       <td>${tx.txOuts[0].amount}</td>
-                    </tr>`
+                    </tr>`);
           }
-          $('#table-rows').html(rows);
+          $('#transaction-rows').html(rows.join());
           break;
         default:
           break;
@@ -149,6 +150,44 @@
     }
   }
   setupWS();
+
+  function updateTxPoolAfterMine(minedTransactions) {
+    const minedTransactionIds = minedTransactions.map(trans => trans.id);
+    const txPoolElements = document.getElementsByClassName('transaction-id');
+    const removableElements = [];
+
+    for (let i = 0; i < txPoolElements.length; i++) {
+      if (minedTransactionIds.find(id => id === txPoolElements[i].innerHTML)) {
+        removableElements.push(txPoolElements[i].parentNode);
+      }
+    }
+    removableElements.forEach(e => e.remove());
+  }
+
+  function updateBlockChain(blockchain) {
+    if (blockchain.length === 1) {
+      let row = `<tr>
+                  <th scope="row">${blockchain[0].index}</th>
+                  <td>${blockchain[0].timestamp}</td>
+                  <td>${blockchain[0].miner}</td>
+                  <td>${JSON.stringify(blockchain[0]).length}</td>
+                </tr>`;
+      $('#block-rows').prepend(row);
+
+      updateTxPoolAfterMine(blockchain[0].data);
+    } else if (blockchain.length > 1) {
+      let row = "";
+      for (const block of blockchain) {
+        row = `<tr>
+                  <th scope="row">${block.index}</th>
+                  <td>${block.timestamp}</td>
+                  <td>${block.miner}</td>
+                  <td>${JSON.stringify(block).length}</td>
+                </tr>`;
+        $('#block-rows').prepend(row);
+      }
+    }
+  }
 
 
 </script>

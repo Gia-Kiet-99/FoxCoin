@@ -257,7 +257,7 @@
 
   function mineBlock(myAddress) {
     if ($('#table-rows').html().trim()) {
-      $('#mine-button').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;&nbsp;Mining...')
+      $('#mine-button').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;&nbsp;<strong>Mining...</strong>')
 
       $.ajax({
         url: `http://localhost:${PORT}/api/blocks/mineBlock`,
