@@ -377,6 +377,7 @@ const MessageType = {
 }
 
 let server;
+let myNodeUrl = "";
 function initP2PServer(port) {
   if (!server) {
     server = new WebSocket.Server({ port: port });
@@ -385,6 +386,7 @@ function initP2PServer(port) {
       // console.log(req);
       initConnection(ws);
     });
+    myNodeUrl = `ws://localhost:${port}`;
     console.log("Websoket server is running at port: " + port);
   }
   return server;
@@ -456,6 +458,15 @@ function initMessageHandler(ws) {
             }
           });
           break;
+        case MessageType.NODE_ADDRESS:
+          const remoteAddress = message.data;
+          if (!isConnectedToNode(remoteAddress)) {
+            connectToPeer(remoteAddress);
+          }
+          break;
+        default:
+          console.log('Message type not found!');
+          break;
       }
     } catch (error) {
       console.log('error in function initMessageHandler!', error);
@@ -508,6 +519,10 @@ function queryAllMsg() {
 
 function queryTransactionPoolMsg() {
   return { type: MessageType.QUERY_TRANSACTION_POOL, data: null };
+}
+
+function nodeUrlMsg() {
+  return { type: MessageType.NODE_ADDRESS, data: myNodeUrl };
 }
 
 
@@ -575,22 +590,35 @@ function handleBlockChainResponse(receivedBlocks) {
 }
 
 /* -------------------- Connect to peer ------------------- */
-function connectToPeer(newPeer) {
-  const ws = new WebSocket(newPeer);
+const connectedNodeUrls = [];
+
+function isConnectedToNode(url) {
+  return connectedNodeUrls.find(node => node === url) ? true : false;
+}
+
+function connectToPeer(url) {
+  const ws = new WebSocket(url);
+
   ws.on('open', () => {
+    write(ws, nodeUrlMsg());
     initConnection(ws);
+    //Save connected node url
+    connectedNodeUrls.push(url);
   });
+
   ws.on('error', () => {
     console.log('Connection failed');
   });
 }
 
 const HOST_LOCATION = 'database/host.json';
+
 function connectToPeers() {
   const jsonString = IOUtil.readJSON(HOST_LOCATION);
   if (jsonString.trim()) {
     const hosts = JSON.parse(jsonString);
     for (const host of hosts) {
+      if (host === myNodeUrl) continue;
       console.log(`Connecting to ${host}...`);
       connectToPeer(host);
     }

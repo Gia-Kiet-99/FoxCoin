@@ -98,10 +98,10 @@
 //   }
 // }
 
-const Websocket = require('ws');
+// const Websocket = require('ws');
 
-const socket = new Websocket.Server({port: 8080});
-console.log(socket.options.port);
+// const socket = new Websocket.Server({port: 8080});
+// console.log(socket.options.port);
 
 // socket.onmessage = function (event) {
 //   console.log(event.target._url);
@@ -111,3 +111,29 @@ console.log(socket.options.port);
 
 // event._socket._host
 // event.target._url
+const nodeUrls = ["dinh","gia", "kiet"];
+
+function isConnectedToNode(url) {
+  return nodeUrls.find(node => node === url) ? true : false;
+}
+
+console.log(isConnectedToNode("kiet"));
+
+
+function updateBalanceIfReceiveNewBlock(newBlock) {
+  const minedTxs = newBlock.data;
+  const myAddress = $('#my-address').text();
+  const currentBalance = parseInt($('#balance').text());
+  const sentAmount = minedTxs.reduce((allTxIns, tx) => allTxIns.concat(tx.txIns), [])
+    .reduce((amount, txIn) => {
+
+    }, 0)
+  const receivedAmount = minedTxs.reduce((allTxOuts, tx) => allTxOuts.concat(tx.txOuts), [])
+    .reduce((amount, txOut) => {
+      if (txOut.address === myAddress) {
+        amount += txOut.amount;
+      }
+      return amount;
+    }, 0);
+  $('#balance').text(newBalance);
+}

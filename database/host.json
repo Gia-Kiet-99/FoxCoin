@@ -1,4 +1,5 @@
 [
+  "ws://localhost:3001",
   "ws://localhost:3003",
   "ws://localhost:3005",
   "ws://localhost:3007",

@@ -40,7 +40,7 @@
             <i class="far fa-id-badge" style="font-size: 48px;"></i>
             <div class="ml-4 text-nowrap text-truncate">
               <h5>Address</h5>
-              <span>{{address}}</span>
+              <span id="my-address">{{address}}</span>
             </div>
           </div>
           <div class="d-flex p-4 ml-3 rounded-lg info shadow-sm" style="color: #eee;background-color: #6c5ce7;">
@@ -149,6 +149,9 @@
       const data = JSON.parse(message.data);
       switch (message.type) {
         case MessageType.RESPONSE_BLOCKCHAIN:
+          if (data.length === 1) {
+            handleReceiveNewBlock(data[0]);
+          }
           break;
         case MessageType.RESPONSE_TRANSACTION_POOL:
           let rows = '';
@@ -168,6 +171,25 @@
     }
   }
   setupWS();
+
+  function getBalance(myAddress) {
+    $.ajax({
+      url: `http://localhost:${PORT}/api/wallet/${myAddress}`,
+      type: 'GET'
+    }).done(data => {
+      console.log("Balance: " + data.balance);
+      $('#balance').text(data.balance);
+    });
+  }
+
+  function handleReceiveNewBlock(newBlock) {
+    const minedTxs = newBlock.data;
+    //update transaction pool
+    updateTxPoolAfterMine(minedTxs);
+    //update balance if receive coin
+    const myAddress = $('#my-address').text();
+    getBalance(myAddress);
+  }
 
   function validateAddress(myAddress, address) {
     if (myAddress === address) {

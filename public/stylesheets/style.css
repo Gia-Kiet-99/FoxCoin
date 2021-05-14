@@ -112,3 +112,20 @@ a.custom-color {
 a.custom-color:hover {
   color: #5f51c9
 }
+
+.page-item.active .page-link {
+  color: white !important;
+  background-color: #4c3fb1 !important;
+  border: none !important;
+}
+.page-link {
+  color: #4c3fb1 !important;
+}
+
+/* .page-item.active .page-link {
+  background-color: lightgrey !important;
+  border: 1px solid black;
+}
+.page-link {
+  color: black !important;
+} */
