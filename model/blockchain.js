@@ -76,7 +76,11 @@ const setUnspentTxOuts = (newUnspentTxOut) => {
   unspentTxOuts = newUnspentTxOut;
 };
 
-/*---------------------- Block function ---------------------*/
+/*------------------------------------- Block function -------------------------------------*/
+function getBlock(index) {
+  return blockchain[index];
+}
+
 function calculateHash(index, previousHash, timestamp, data, difficulty, nonce) {
   return SHA256(index + previousHash + timestamp + JSON.stringify(data) + difficulty + nonce).toString();
 }
@@ -636,5 +640,6 @@ module.exports = {
   initP2PServer,
   getSockets,
   broadcastTransactionPool,
-  connectToPeers
+  connectToPeers,
+  getBlock
 }

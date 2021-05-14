@@ -20,9 +20,17 @@ router.get('/', (req, res) => {
     }
   });
   res.render('explorer/explorer', {
+    title: "Explorer",
     blockchain: blockchain.reverse(),
     transactionPool: transactionPool.reverse()
   });
+});
+
+router.get('/block/:index', (req, res) => {
+  const index = parseInt(req.params.index);
+  const block = blockModel.getBlock(index);
+
+  res.render('explorer/block', {title: "Block detail", block: block});
 })
 
 
