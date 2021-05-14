@@ -4,7 +4,7 @@
 
 body {
   padding: 0;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
@@ -68,10 +68,11 @@ a {
   color: #999;
   display: block;
   text-decoration: none;
+  transition: all .3s ease;
 }
 
 .sidebar-button:hover {
-  color: #555;
+  color: #eee;
 }
 
 .active-side-bar {
@@ -95,4 +96,19 @@ a {
 
 table {
   table-layout: fixed;
+}
+
+th, td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* color: red; */
+}
+
+a.custom-color {
+  color: #5f51c9;
+}
+
+a.custom-color:hover {
+  color: #5f51c9
 }

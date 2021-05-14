@@ -59,6 +59,8 @@
 </div>
 
 <script type="text/javascript">
+  const PORT = 3000;
+
   const tabIds = ["signup-tab", "signin-tab"];
   const formIds = ["signup-form", "signin-form"];
   let validEmail = false;
@@ -114,7 +116,7 @@
   function checkEmailExists(email) {
     if (validateEmail(email)) {
       $.ajax({
-        url: `http://localhost:3000/api/users/${email}`,
+        url: `http://localhost:${PORT}/api/users/${email}`,
         type: 'GET'
       }).done((data) => {
         console.log(data);
@@ -146,7 +148,7 @@
       const jsonToPost = JSON.stringify(dataToPost);
 
       $.ajax({
-        url: 'http://localhost:3000/api/users',
+        url: `http://localhost:${PORT}/api/users`,
         type: 'POST',
         dataType: 'json',
         data: jsonToPost,

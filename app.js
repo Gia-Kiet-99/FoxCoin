@@ -55,11 +55,15 @@ app.use(function(err, req, res, next) {
 
 
 const blockModel = require('./model/blockchain');
-blockModel.initP2PServer(45678);
 
-const PORT = 3000;
-app.listen(3000, function() {
-  console.log(`Http server is running at port ${PORT}`);
+const HTTP_PORT = 3000;
+const P2P_PORT = 3001;
+
+blockModel.initP2PServer(process.env.P2P_PORT || P2P_PORT);
+blockModel.connectToPeers();
+
+app.listen(process.env.HTTP_PORT || HTTP_PORT, function() {
+  console.log(`Http server is running at port ${HTTP_PORT}`);
 })
 
 module.exports = app;

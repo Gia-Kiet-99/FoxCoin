@@ -1,48 +1,49 @@
-<div class="container-fluid">
-  <header>
-    <nav class="navbar fixed-top navbar-light bg-white">
-      <a class="navbar-brand d-flex align-items-center" href="/wallet">
-        <img src="/images/fox.png" class="rounded-circle" width="40" height="40" alt="foxicon">
-        &nbsp;&nbsp;<strong style="color: #b64900;">FoxWallet</strong>
+<div class="container-lg">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: rgb(18, 29, 51);">
+    <div class="container p-0">
+      <a class="navbar-brand" href="/wallet">
+        <img src="images/fox_icon.png" class="rounded-circle" width="40" height="40" alt="foxicon">
+        &nbsp;&nbsp;<strong class="text-white">FOX</strong>
       </a>
-      <a href="/users/signout" class="text-left sidebar-button d-flex align-items-center mx-3" role="button">
-        <i class="fas fa-sign-out-alt" style="font-size: 24px;"></i>
-        &nbsp;&nbsp;<strong>Sign out</strong>
-      </a>
-    </nav>
-  </header>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse d-flex" id="navbarNav">
+        <ul class="navbar-nav d-flex justify-content-center" style="flex: 1">
+          <li class="nav-item mx-2">
+            <a class="nav-link pb-0 px-1" href="/wallet" style="border-bottom: 2px solid #8c7ae6; border-radius: 5px;">
+              <h6 style="font-size: 1em; color: #eee"><strong>Wallet</strong></h6> <span
+                class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link px-1" href="/explorer">
+              <h6 style="color: #999; font-size: 1em;"><strong>Explorer</strong></h6>
+            </a>
+          </li>
+        </ul>
+        <a href="/users/signout" class="text-left sidebar-button d-flex align-items-center px-3" role="button">
+          <i class="fas fa-sign-out-alt" style="font-size: 16px;"></i>
+          &nbsp;&nbsp;<strong>Sign out</strong>
+        </a>
+      </div>
+    </div>
+  </nav>
 
   <main>
     <div class="row" style="height: 100vh;">
-      <div class="col-sm-2 p-0">
-        <nav class="navbar p-0" style="margin-top: 85px;">
-          <ul style="list-style-type: none;width: 100%;margin: 0;padding: 0;">
-            <li>
-              <a href="/wallet" class="text-left sidebar-button active-side-bar p-3 pl-4">
-                <i class="fa fa-home" style="font-size: 24px;" aria-hidden="true"></i>
-                &nbsp;&nbsp;<strong>Wallet</strong>
-              </a>
-            </li>
-            <li>
-              <a href="/explorer" class="text-left sidebar-button p-3 pl-4" role="button">
-                <i class="fab fa-wpexplorer" style="font-size: 24px;"></i>
-                &nbsp;&nbsp;<strong>Explorer</strong>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
 
-      <div class="col-sm-10 bg-light">
-        <div class="row d-flex" style="margin-top: 75px; margin-left: 75px; margin-right: 75px;">
-          <div class="d-flex p-4 mx-5 my-3 rounded-lg info" style="color: #eee; background-color: #8c7ae6;">
+      <div class="col-sm-12">
+        <div class="row d-flex" style="margin-top: 120px;">
+          <div class="d-flex p-4 mr-3 rounded-lg info shadow-sm" style="color: #eee; background-color: #8c7ae6;">
             <i class="far fa-id-badge" style="font-size: 48px;"></i>
-            <div class="ml-4">
+            <div class="ml-4 text-nowrap text-truncate">
               <h5>Address</h5>
-              <p style="max-width: 100%;">{{address}}</p>
+              <span>{{address}}</span>
             </div>
           </div>
-          <div class="d-flex p-4 mr-5 my-3 rounded-lg info" style="color: #eee;background-color: #6c5ce7;">
+          <div class="d-flex p-4 ml-3 rounded-lg info shadow-sm" style="color: #eee;background-color: #6c5ce7;">
             <i class="fas fa-wallet" style="font-size: 48px;"></i>
             <div class="ml-4">
               <h5>Balance</h5>
@@ -51,14 +52,14 @@
           </div>
         </div>
 
-        <div class="row" style="margin: 20px 125px; height: 100px;">
+        <div class="row mt-5">
           <div class="col-sm-12 rounded-lg bg-white p-0">
-            <div class="card" style="border: none; border-left: 3px solid #8c7ae6;">
-              <div class="card-header bg-white border-0">
+            <div class="card shadow-sm" style="border: none; border-left: 5px solid #8c7ae6;">
+              <div class="card-header bg-white border-0 pt-3">
                 <h4><strong style="color: #555">Send Transaction</strong></h4>
               </div>
               <div class="card-body">
-                <div class="form-row mx-4 mb-4">
+                <div class="form-row mx-4 mb-2">
                   <div class="form-group col-md-4">
                     <label for="amount"><strong style="color: #555;">Amount</strong></label>
                     <input type="number" name="amount" class="form-control" id="amount" min="0" placeholder="Amount"
@@ -73,6 +74,7 @@
                   </div>
                   <button class="btn mt-1" onclick="sendTransaction('{{address}}', {{balance}})"
                     style="background-color: #6c5ce7; color: #eee">
+                    <i class="fas fa-paper-plane" style="color : white"></i>&nbsp;
                     <strong>SEND</strong>
                   </button>
                 </div>
@@ -81,34 +83,37 @@
           </div>
         </div>
 
-        <div class="row" style="margin: 200px 125px;">
+        <div class="row my-5">
           <div class="col-sm-12 rounded-lg bg-white p-0">
-            <div class="card" style="border: none; border-left: 3px solid #8c7ae6;">
-              <div class="card-header bg-white border-0" style="background-color: pink;">
+            <div class="card shadow-sm" style="border: none; border-left: 5px solid #8c7ae6;">
+              <div class="card-header bg-white border-0 pt-3">
                 <h4><strong style="color: #555;">Transaction pool</strong></h4>
               </div>
               <div class="card-body">
-                <div class="mx-4 mb-4">
+                <div class="mx-4 mb-2">
                   <table class="table table-borderless">
                     <thead>
                       <tr>
-                        <th scope="col">Hash</th>
-                        <th scope="col">Receiver</th>
-                        <th scope="col">Amount (FXC)</th>
+                        <th scope="col" class="col-5">Hash</th>
+                        <th scope="col" class="col-5">Receiver</th>
+                        <th scope="col" class="col-2">Amount (FXC)</th>
                       </tr>
                     </thead>
                     <tbody id="table-rows">
                       {{#each transactionPool}}
                       <tr>
-                        <th class="transaction-id" scope="row">{{this.id}}</th>
+                        <th scope="row">
+                          <a class="custom-color transaction-id" href="#">{{this.id}}</a>
+                        </th>
                         <td>{{this.receiver}}</td>
                         <td>{{this.amount}}</td>
                       </tr>
                       {{/each}}
                     </tbody>
                   </table>
-                  <button id="mine-button" class="btn mt-1" onclick="mineBlock('{{address}}')"
+                  <button id="mine-button" class="btn mt-1 d-flex align-items-center" onclick="mineBlock('{{address}}')"
                     style="background-color: #6c5ce7; color: #eee">
+                    <img src="images/hoe.png" alt="hoe.png">&nbsp;&nbsp;
                     <strong>MINE BLOCKS</strong>
                   </button>
                 </div>
@@ -124,6 +129,7 @@
 
 <script>
   const PORT = 3000;
+  const P2P_PORT = 3001;
 
   const MessageType = {
     QUERY_LATEST: 0,
@@ -134,7 +140,7 @@
   }
 
   function setupWS() {
-    const ws = new WebSocket('ws://localhost:45678');
+    const ws = new WebSocket(`ws://localhost:${P2P_PORT}`);
     ws.onopen = function () {
       console.log('Onopen');
     }
@@ -148,7 +154,7 @@
           let rows = '';
           for (const tx of data) {
             rows += `<tr>
-                      <th class="transaction-id" scope="row">${tx.id}</th>
+                      <th scope="row"><a class="transaction-id custom-color" href="#">${tx.id}</a></th>
                       <td>${tx.txOuts[0].address}</td>
                       <td>${tx.txOuts[0].amount}</td>
                     </tr>`
@@ -275,13 +281,13 @@
         });
 
         $('#balance').text(data.balance);
-        $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+        $('#mine-button').html('<img src="images/hoe.png" alt="hoe.png">&nbsp;&nbsp;<strong>MINE BLOCKS</strong>');
 
         console.log("Update transaction pool after mined");
         updateTxPoolAfterMine(data.newBlock.data);
       }).fail(error => {
         console.log(error);
-        $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+        $('#mine-button').html('<img src="images/hoe.png" alt="hoe.png">&nbsp;&nbsp;<strong>MINE BLOCKS</strong>');
         bottomAlert('warning', 'Transaction pool is empty')
       })
     } else {
@@ -296,7 +302,7 @@
 
     for (let i = 0; i < txPoolElements.length; i++) {
       if (minedTransactionIds.find(id => id === txPoolElements[i].innerHTML)) {
-        removableElements.push(txPoolElements[i].parentNode);
+        removableElements.push(txPoolElements[i].parentNode.parentNode);
       }
     }
     removableElements.forEach(e => e.remove());

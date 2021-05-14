@@ -3,7 +3,6 @@ const EC = require('elliptic').ec;
 const ec = new EC('secp256k1');
 const _ = require('lodash');
 
-const db = require('../util/db');
 const { COINBASE_AMOUNT, processTransactions, getCoinbaseTransaction } = require('./transaction');
 const { createTransaction, findUnspentTxOuts, getBalance, getPrivateFromWallet, getPublicFromWallet } = require('./wallet');
 const { addToTransactionPool, getTransactionPool, updateTransactionPool } = require('./transaction-pool');
@@ -371,15 +370,11 @@ const MessageType = {
   QUERY_ALL: 1,
   RESPONSE_BLOCKCHAIN: 2,
   QUERY_TRANSACTION_POOL: 3,
-  RESPONSE_TRANSACTION_POOL: 4
+  RESPONSE_TRANSACTION_POOL: 4,
+  QUERY_NODES: 5,
+  RESPONSE_NODES: 6,
+  NODE_ADDRESS: 7
 }
-
-// class Message {
-//   constructor(type, data) {
-//     this.type = type;
-//     this.data = data;
-//   }
-// }
 
 let server;
 function initP2PServer(port) {
@@ -387,7 +382,7 @@ function initP2PServer(port) {
     server = new WebSocket.Server({ port: port });
     server.on('connection', (ws, req) => {
       console.log("Connect to client " + ws._socket.remoteAddress);
-      // console.log(ws);
+      // console.log(req);
       initConnection(ws);
     });
     console.log("Websoket server is running at port: " + port);
@@ -408,10 +403,10 @@ function initConnection(ws) {
   write(ws, queryChainLengthMsg());
 
   // query transaction pool only some time after chain query
-  // setTimeout(() => {
-  //   console.log("##### Send message to query transaction pool");
-  //   broadcast(queryTransactionPoolMsg());
-  // }, 500);
+  setTimeout(() => {
+    console.log("##### Send message to query transaction pool");
+    broadcast(queryTransactionPoolMsg());
+  }, 500);
 }
 
 function initMessageHandler(ws) {
@@ -486,7 +481,11 @@ function write(ws, message) {
 }
 
 function broadcast(message) {
-  server.clients.forEach(socket => write(socket, message));
+  server.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      write(client, message);
+    }
+  });
 }
 
 function broadcastLatest() {
@@ -586,6 +585,18 @@ function connectToPeer(newPeer) {
   });
 }
 
+const HOST_LOCATION = 'database/host.json';
+function connectToPeers() {
+  const jsonString = IOUtil.readJSON(HOST_LOCATION);
+  if (jsonString.trim()) {
+    const hosts = JSON.parse(jsonString);
+    for (const host of hosts) {
+      console.log(`Connecting to ${host}...`);
+      connectToPeer(host);
+    }
+  }
+}
+
 
 module.exports = {
   getLatestBlock, Block, getBlockChain, getUnspentTxOuts, sendTransaction,
@@ -596,5 +607,6 @@ module.exports = {
   broadcastLatest,
   initP2PServer,
   getSockets,
-  broadcastTransactionPool
+  broadcastTransactionPool,
+  connectToPeers
 }

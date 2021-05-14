@@ -29,7 +29,7 @@
         </nav>
       </div>
       <div class="col-sm-10 bg-light">
-        <div class="row d-flex" style="margin-top: 75px; margin-left: 75px; margin-right: 75px;">
+        <div class="row d-flex" style="margin: 75px;">
           <div class="mx-5 my-3 rounded-lg info" style="color: #eee;">
             <div class="card border-0">
               <div class="card-header" style="background-color: #8c7ae6;">
@@ -112,6 +112,7 @@
 </div>
 
 <script>
+  const P2P_PORT = 3001;
   const MessageType = {
     QUERY_LATEST: 0,
     QUERY_ALL: 1,
@@ -121,7 +122,7 @@
   }
 
   function setupWS() {
-    const ws = new WebSocket('ws://localhost:45678');
+    const ws = new WebSocket(`ws://localhost:${P2P_PORT}`);
     ws.onopen = function () {
       console.log('Onopen');
     }

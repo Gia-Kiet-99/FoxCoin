@@ -53,47 +53,61 @@
 // add().then(() => console.log("done"));
 
 // const { getLatestBlock } = require('./model/blockchain')
-const RandomString = require('randomstring')
-console.log(RandomString.generate({length: 64, charset: 'hex'}));
+// const RandomString = require('randomstring')
+// console.log(RandomString.generate({length: 64, charset: 'hex'}));
 
-function mineBlock(myAddress) {
-  if ($('#table-rows').html().trim()) {
-    $('#mine-button').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;&nbsp;Mining...')
-    $.ajax({
-      url: `http://localhost:${PORT}/api/blocks/mineBlock`,
-      type: 'POST',
-      dataType: 'json',
-      data: JSON.stringify({ myAddress: myAddress }),
-      contentType: 'application/json'
-    }).done(data => {
-      console.log(data);
-      Swal.fire({
-        icon: 'success',
-        title: "Congratulation! You've mined a block and got 50 coin",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      $('#balance').text(data.balance);
-      $('#mine-button').html('<strong>MINE BLOCKS</strong>');
-    }).fail(error => {
-      console.log(error);
-      $('#mine-button').html('<strong>MINE BLOCKS</strong>');
-    })
-  } else {
-    const Toast = Swal.mixin({
-      toast: true,
-      position: 'bottom-start',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: false,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-      }
-    })
-    Toast.fire({
-      icon: 'warning',
-      title: 'Transaction pool is empty'
-    })
-  }
-}
+// function mineBlock(myAddress) {
+//   if ($('#table-rows').html().trim()) {
+//     $('#mine-button').html('<span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>&nbsp;&nbsp;Mining...')
+//     $.ajax({
+//       url: `http://localhost:${PORT}/api/blocks/mineBlock`,
+//       type: 'POST',
+//       dataType: 'json',
+//       data: JSON.stringify({ myAddress: myAddress }),
+//       contentType: 'application/json'
+//     }).done(data => {
+//       console.log(data);
+//       Swal.fire({
+//         icon: 'success',
+//         title: "Congratulation! You've mined a block and got 50 coin",
+//         showConfirmButton: false,
+//         timer: 1500
+//       });
+//       $('#balance').text(data.balance);
+//       $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+//     }).fail(error => {
+//       console.log(error);
+//       $('#mine-button').html('<strong>MINE BLOCKS</strong>');
+//     })
+//   } else {
+//     const Toast = Swal.mixin({
+//       toast: true,
+//       position: 'bottom-start',
+//       showConfirmButton: false,
+//       timer: 3000,
+//       timerProgressBar: false,
+//       didOpen: (toast) => {
+//         toast.addEventListener('mouseenter', Swal.stopTimer)
+//         toast.addEventListener('mouseleave', Swal.resumeTimer)
+//       }
+//     })
+//     Toast.fire({
+//       icon: 'warning',
+//       title: 'Transaction pool is empty'
+//     })
+//   }
+// }
+
+const Websocket = require('ws');
+
+const socket = new Websocket.Server({port: 8080});
+console.log(socket.options.port);
+
+// socket.onmessage = function (event) {
+//   console.log(event.target._url);
+// }
+
+// socket.send("ws://localhost:4001")
+
+// event._socket._host
+// event.target._url
