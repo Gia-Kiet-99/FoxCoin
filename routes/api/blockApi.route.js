@@ -15,6 +15,32 @@ router.post('/mineBlock', (req, res) => {
     const balance = walletModel.getBalance(myAddress, blockModel.getUnspentTxOuts());
     res.json({ newBlock, balance });
   }
+});
+
+router.get('/:index', (req, res) => {
+  const index = req.params.index;
+
+  const block = blockModel.getBlock(index);
+  const allTxInOfBlock = block.data.map(tx => tx.txIns).flat();
+  const allTransaction = blockModel.getBlockChain().map(block => block.data).flat();
+
+  const unspentTxOutsOfBlock = [];
+  for (let i = 1; i < allTxInOfBlock.length; i++) {
+    for (const tx of allTransaction) {
+      if (tx.id === allTxInOfBlock[i].txOutId) {
+        const txOut = tx.txOuts[allTxInOfBlock[i].txOutIndex];
+        unspentTxOutsOfBlock.push({
+          txOutId: allTxInOfBlock[i].txOutId,
+          txOutIndex: allTxInOfBlock[i].txOutIndex,
+          address: txOut.address,
+          amount: txOut.amount
+        });
+        break;
+      }
+    }
+  }
+  // console.log(unspentTxOutsOfBlock);
+  res.json({block, unspentTxOutsOfBlock});
 })
 
 

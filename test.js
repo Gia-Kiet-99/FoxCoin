@@ -137,3 +137,12 @@ function updateBalanceIfReceiveNewBlock(newBlock) {
     }, 0);
   $('#balance').text(newBalance);
 }
+
+
+
+const transactionLiElements = "";
+      for (let i = 1; i < transactions.length; i++) {
+        transactionLiElements += createTransactionElement();
+      }
+
+      $('#transaction-list').append(coinbaseLiElement);

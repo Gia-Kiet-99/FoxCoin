@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const moment = require('moment');
 
 const blockModel = require('../model/blockchain');
 const txPoolModel = require('../model/transaction-pool');
@@ -8,8 +9,8 @@ const txPoolModel = require('../model/transaction-pool');
 router.get('/', (req, res) => {
   const blockchain = blockModel.getBlockChain().map(block => ({
     index: block.index,
-    timestamp: block.timestamp,
-    miner: block.miner,
+    timestamp: moment(block.timestamp*1000).fromNow(),
+    miner: 'undefined',
     size: JSON.stringify(block).length
   }));
   const transactionPool = txPoolModel.getTransactionPool().map(tx => {
@@ -30,7 +31,10 @@ router.get('/block/:index', (req, res) => {
   const index = parseInt(req.params.index);
   const block = blockModel.getBlock(index);
 
-  res.render('explorer/block', {title: "Block detail", block: block});
+  res.render('explorer/block', {
+    title: "Block detail"
+    // block: block,
+  });
 })
 
 

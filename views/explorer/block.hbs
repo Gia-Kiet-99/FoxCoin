@@ -1,0 +1,266 @@
+<div class="container-lg">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: rgb(18, 29, 51);">
+    <div class="container p-0">
+      <a class="navbar-brand" href="/wallet">
+        <img src="/images/fox_icon.png" class="rounded-circle" width="40" height="40" alt="foxicon">
+        &nbsp;&nbsp;<strong class="text-white">FOX</strong>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse d-flex" id="navbarNav">
+        <ul class="navbar-nav d-flex justify-content-center" style="flex: 1">
+          <li class="nav-item mx-2">
+            <a class="nav-link px-1" href="/wallet">
+              <h6 style="font-size: 1em; color: #999"><strong>Wallet</strong></h6> <span
+                class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link pb-0 px-1" href="/explorer"
+              style="border-bottom: 2px solid #8c7ae6; border-radius: 5px;">
+              <h6 style="color: #eee; font-size: 1em;"><strong>Explorer</strong></h6>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top: 120px; padding-bottom: 50px">
+    <section id="block-intro">
+      <header>
+        <h4 style="color: #333">
+          <i class="fas fa-cube"></i>
+          <strong>Block <span id="block-index"></span></strong>
+        </h4>
+      </header>
+      <div class="mt-3">
+        <p class="small-text">This block was mined on <span id="block-timestamp"></span>.</p>
+        <p class="small-text">
+          The miner(s) of this block earned a total reward of <span id="miner-amount"></span> FXC.
+        </p>
+        <p class="small-text">A total of <span id="total-send"></span> FXC were sent.</p>
+      </div>
+    </section>
+
+    <section id="block-detail" class="my-5">
+      <div>
+        <ul style="list-style-type: none;" class="p-0">
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Hash</div>
+            <div style="flex: 2" id="hash"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Timestamp</div>
+            <div style="flex: 2" id="timestamp"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Height</div>
+            <div style="flex: 2" id="height"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Miner</div>
+            <div style="flex: 2" id="miner" class="text-nowrap text-truncate">
+              <a href="#"></a>
+            </div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Number of Transactions</div>
+            <div style="flex: 2" id="number-of-txs"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Difficulty</div>
+            <div style="flex: 2" id="difficulty"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Size</div>
+            <div style="flex: 2" id="size">
+              <span></span> Bytes
+            </div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Nonce</div>
+            <div style="flex: 2" id="nonce"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Transaction Volume</div>
+            <div style="flex: 2" id="tx-volume">
+              <span></span> FXC
+            </div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Block Reward</div>
+            <div style="flex: 2" id="block-reward">
+              <span></span> FXC
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="block-transactions">
+      <header>
+        <h4 class="d-flex align-items-center" style="color: #333">
+          <img src="/images/transaction_icon.png" alt="transaction_icon.png">
+          &nbsp;<strong>Block Transactions</strong>
+        </h4>
+      </header>
+      <div class="my-4">
+        <ul style="list-style-type: none;" class="p-0" id="transaction-list">
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const PORT = 3000;
+  function getBlock(index) {
+    $.ajax({
+      url: `http://localhost:${PORT}/api/blocks/${index}`,
+      type: 'GET'
+    }).done(data => {
+      console.log(data.block);
+      console.log(data.unspentTxOutsOfBlock);
+      const block = data.block;
+      const unspentTxOutsOfBlock = data.unspentTxOutsOfBlock;
+
+      // Update block intro
+      const totalSend = block.data.reduce((amount, transaction, index) => {
+        if (index === 0) {
+          return amount;
+        }
+        return amount + transaction.txOuts[0].amount;
+      }, 0);
+      $('#block-index').text(block.index);
+      $('#block-timestamp').text(moment(block.timestamp * 1000));
+      $('#miner-amount').text(block.data[0].txOuts[0].amount);
+      $('#total-send').text(totalSend);
+
+      // Update block data
+      $('#hash').text(block.hash);
+      $('#timestamp').text(moment(block.timestamp * 1000).format('LLL'));
+      $('#height').text(block.index);
+      $('#miner > a').text(block.data[0].txOuts[0].address);
+      $('#number-of-txs').text(block.data.length);
+      $('#difficulty').text(block.difficulty);
+      $('#size > span').text(JSON.stringify(block).length);
+      $('#nonce').text(block.nonce);
+      $('#tx-volume > span').text(totalSend);
+      $('#block-reward > span').text(block.data[0].txOuts[0].amount);
+
+      // Render transactions data
+      const transactions = block.data;
+      // Render coinbase transaction
+      const coinbaseTx = transactions[0];
+      const coinbaseLiElement = createCoinbaseLiElement(
+        coinbaseTx.id,
+        coinbaseTx.txOuts[0].address,
+        coinbaseTx.txOuts[0].amount);
+      $('#transaction-list').append(coinbaseLiElement);
+
+      // Render normal transaction
+      let transactionElement = "";
+      for (let i = 1; i < transactions.length; i++) {
+        transactionElement = createTransactionElement(transactions[i], unspentTxOutsOfBlock);
+        $('#transaction-list').append(transactionElement);
+      }
+
+    });
+  }
+
+  function createCoinbaseLiElement(txId, receiver, coinbaseAmount) {
+    return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
+            <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
+              <div class="mr-5">Hash</div>
+              <div class="text-nowrap text-truncate">
+                <a
+                  href="#">${txId}</a>
+                <p class="mt-3 font-weight-bold" style="color: #00875a">COINBASE (Newly Generated Coins)</p>
+              </div>
+            </div>
+
+            <div style="flex: 1" class="d-flex justify-content-center align-items-center">
+              <img src="/images/right-arrow.png" alt="right-arrow.png">
+            </div>
+
+            <div style="flex: 10" class="d-flex pl-4 small-text text-nowrap text-truncate">
+              <div class="text-nowrap text-truncate mr-3">
+                <a href="#">${receiver}</a>
+              </div>
+              <div>${coinbaseAmount} FXC</div>
+            </div>
+          </li>`;
+  }
+
+  function createTransactionInputElement(txIn, unspentTxOutsOfBlock) {
+    let ret = "";
+    const result = unspentTxOutsOfBlock.find(uTxO => uTxO.txOutId === txIn.txOutId);
+    if (result) {
+      ret = `<div class="d-flex small-text text-nowrap text-truncate transaction-In">
+              <div class="text-nowrap text-truncate mr-3">
+                <a href="#">${result.txOutId}</a>
+              </div>
+              <div>${result.amount} FXC</div>
+            </div>`;
+    }
+    return ret;
+  }
+
+  function createTransactionOutputElement(txOut) {
+    return `<div class="transaction-out d-flex">
+              <div class="text-nowrap text-truncate mr-3">
+                <a href="#">${txOut.address}</a>
+              </div>
+              <div>${txOut.amount} FXC</div>
+            </div>`;
+  }
+
+  function createTransactionElement(transaction, unspentTxOutsOfBlock) {
+    const txId = transaction.id;
+    const txIns = transaction.txIns;
+    const txOuts = transaction.txOuts;
+
+    let txInElements = "";
+    for (const txIn of txIns) {
+      txInElements += createTransactionInputElement(txIn, unspentTxOutsOfBlock);
+    }
+
+    let txOutElements = "";
+    for (const txOut of txOuts) {
+      txOutElements += createTransactionOutputElement(txOut);
+    }
+
+    return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
+            <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
+              <div class="mr-5">Hash</div>
+              <div class="text-nowrap text-truncate">
+                <a class="transaction-hash"
+                  href="#">${txId}</a>
+                <div class="mt-2 transaction-Ins">
+                  ${txInElements}
+                </div>
+              </div>
+            </div>
+
+            <div style="flex: 1" class="d-flex justify-content-center align-items-center">
+              <img src="/images/right-arrow.png" alt="right-arrow.png">
+            </div>
+
+            <div style="flex: 10" class="pl-4 small-text text-nowrap text-truncate">
+              ${txOutElements}
+            </div>
+          </li>`;
+  }
+
+  $(document).ready(function () {
+    const currLocation = window.location.href;
+    const str = currLocation.split('/');
+    const blockIndex = str[str.length - 1];
+    console.log('Block index: ' + blockIndex);
+
+    getBlock(blockIndex);
+  })
+</script>

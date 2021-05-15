@@ -122,10 +122,23 @@ a.custom-color:hover {
   color: #4c3fb1 !important;
 }
 
-/* .page-item.active .page-link {
-  background-color: lightgrey !important;
-  border: 1px solid black;
+.small-text {
+  font-size: 15px;
 }
-.page-link {
-  color: black !important;
-} */
+
+.block-data-row {
+  border-bottom: .5px solid rgb(235, 235, 235);
+  padding: 10px 0px;
+  font-size: 15px;
+}
+
+.hover-gray-background {
+  transition: .2s all ease;
+}
+.hover-gray-background:hover {
+  background-color: rgb(240, 242, 247);
+}
+
+.light-border-bottom {
+  border-bottom: .5px solid #eee;
+}

@@ -2,7 +2,7 @@
   <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: rgb(18, 29, 51);">
     <div class="container p-0">
       <a class="navbar-brand" href="/wallet">
-        <img src="images/fox_icon.png" class="rounded-circle" width="40" height="40" alt="foxicon">
+        <img src="/images/fox_icon.png" class="rounded-circle" width="40" height="40" alt="foxicon">
         &nbsp;&nbsp;<strong class="text-white">FOX</strong>
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -28,8 +28,8 @@
     </div>
   </nav>
 
-  <main style="margin-top: 120px;">
-    <div class="row" style="height: 100vh">
+  <main style="padding-top: 120px;">
+    <div class="row" style="max-height: 100vh">
 
       <div class="col-sm-6 rounded-lg p-0" style="color: #eee;">
         <div class="card border-0 shadow-sm mr-2">
@@ -109,14 +109,17 @@
     RESPONSE_TRANSACTION_POOL: 4
   }
 
+  let blockTable;
+  let transactionTable;
+
   $(document).ready(function () {
-    $('#block-table').DataTable({
+    blockTable = $('#block-table').DataTable({
       searching: false,
       ordering: false,
       bLengthChange: false,
       bInfo: false
     });
-    $('#transaction-table').DataTable({
+    transactionTable = $('#transaction-table').DataTable({
       searching: false,
       ordering: false,
       bLengthChange: false,
@@ -147,7 +150,14 @@
                       <td>${tx.txOuts[0].amount}</td>
                     </tr>`);
           }
+          transactionTable.destroy();
           $('#transaction-rows').html(rows.join());
+          transactionTable = $('#transaction-table').DataTable({
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            bInfo: false
+          });
           break;
         default:
           break;
@@ -176,12 +186,18 @@
                   <th scope="row">
                     <a class="custom-color" href="/explorer/block/${blockchain[0].index}">${blockchain[0].index}</a>
                   </th>
-                  <td>${blockchain[0].timestamp}</td>
+                  <td>${moment(blockchain[0].timestamp * 1000).fromNow()}</td>
                   <td>${blockchain[0].miner}</td>
                   <td>${JSON.stringify(blockchain[0]).length}</td>
                 </tr>`;
+      blockTable.destroy();
       $('#block-rows').prepend(row);
-
+      blockTable = $('#block-table').DataTable({
+        searching: false,
+        ordering: false,
+        bLengthChange: false,
+        bInfo: false
+      });
       updateTxPoolAfterMine(blockchain[0].data);
     } else if (blockchain.length > 1) {
       let row = "";
