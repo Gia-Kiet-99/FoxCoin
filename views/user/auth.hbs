@@ -50,7 +50,8 @@
             </div>
             <br>
             <small id="signinHelp" class="form-text text-muted text-center">{{signin_message}}</small>
-            <button type="submit" class="btn btn-block btn-info my-2" aria-describedby="signinHelp"><strong>Submit</strong></button>
+            <button type="submit" class="btn btn-block btn-info my-2"
+              aria-describedby="signinHelp"><strong>Submit</strong></button>
           </form>
         </div>
       </div>
@@ -155,33 +156,39 @@
         contentType: 'application/json'
       }).done((data) => {
         console.log(data);
-        Swal.mixin({
+
+
+        Swal.fire({
+          title: 'Private Key',
+          text: 'Use to sign transaction',
           input: 'text',
+          inputValue: data.privateKey,
+          inputAttributes: { disabled: true },
           confirmButtonText: 'Next &rarr;',
           showCancelButton: false,
-          progressSteps: ['1', '2'],
           allowOutsideClick: false,
           confirmButtonColor: '#6c5ce7',
-          inputAttributes: { disabled: true },
           backdrop: `rgba(0,0,0,0.8)`
-        }).queue([
-          {
-            title: 'Private key',
-            text: 'use to sign transaction',
-            inputValue: data.privateKey
-          },
-          {
-            title: 'Public key',
-            text: 'use to sign in',
-            inputValue: data.publicKey
-          },
-        ]).then((result) => {
+        }).then(() => {
           Swal.fire({
-            icon: 'success',
-            title: 'Have a nice day!',
-            confirmButtonText: 'Lovely!'
-          })
-        })
+            title: 'Public Key',
+            text: 'Use to send transaction',
+            input: 'text',
+            inputValue: data.publicKey,
+            inputAttributes: { disabled: true },
+            confirmButtonText: 'Next &rarr;',
+            showCancelButton: false,
+            allowOutsideClick: false,
+            confirmButtonColor: '#6c5ce7',
+            backdrop: `rgba(0,0,0,0.8)`
+          }).then(() => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Have a nice day!',
+              timer: 3000
+            })
+          });
+        });
 
         //toggle to sign in
         toggleActiveTab('signin-tab');

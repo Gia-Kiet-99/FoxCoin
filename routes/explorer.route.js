@@ -53,8 +53,14 @@ router.get('/transaction/:id', (req, res, next) => {
   }
 });
 
-router.get('/address/:publicKey', (req, res) => {
+router.get('/address/:publicKey', (req, res, next) => {
   const publicKey = req.params.publicKey;
+  const result = blockModel.getBlockChain().map(block => block.data).flat()
+    .map(tx => tx.txOuts).flat().find(txOut => txOut.address === publicKey);
+
+  if(!result) {
+    next();
+  }
 
   res.render('explorer/address', { title: "Address detail" });
 })

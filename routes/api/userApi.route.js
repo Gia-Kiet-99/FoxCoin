@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
 
 const userApi = require('../../model/api/userApi.model');
 const walletModel = require('../../model/wallet');
@@ -56,6 +58,36 @@ router.post('/', async (req, res) => {
       error_message: "Something went wrong"
     })
   }
+});
+
+router.get('/address/:publicKey', (req, res) => {
+  const publicKey = req.params.publicKey;
+  // console.log(typeof publicKey);
+  const key = ec.keyFromPublic(publicKey, 'hex');
+  let totalSent = 0;
+  let totalReceived = 0;
+
+  let txOfAddress = [];
+  const allTransaction = blockModel.getBlockChain().map(block => block.data).flat();
+  for (const tx of allTransaction) {
+    if (tx.txIns[0].signature && key.verify(tx.id, tx.txIns[0].signature)) {
+      totalSent += tx.txOuts[0].amount;
+      txOfAddress.push(tx);
+    } else if (tx.txOuts[0].address === publicKey) {
+      totalReceived += tx.txOuts[0].amount;
+      txOfAddress.push(tx);
+    }
+  }
+
+  const finalBalance = walletModel.getBalance(publicKey, blockModel.getUnspentTxOuts());
+
+  res.json({
+    publicKey,
+    totalReceived,
+    totalSent,
+    finalBalance,
+    txOfAddress
+  });
 })
 
 

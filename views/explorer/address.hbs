@@ -32,16 +32,14 @@
     <section id="block-intro">
       <header>
         <h4 style="color: #333">
-          <i class="fas fa-cube"></i>
-          <strong>Address <span id="block-index"></span></strong>
+          <i class="far fa-id-badge"></i>
+          <strong>Address</strong>
         </h4>
       </header>
       <div class="mt-3">
-        <div class="small-text">This block was mined on <span id="block-timestamp"></span>.</div>
-        <div class="small-text">
-          The miner(s) of this block earned a total reward of <span id="miner-amount"></span> FXC.
-        </div>
-        <div class="small-text">A total of <span id="total-send"></span> FXC were sent.</div>
+        <div class="small-text">This address has transacted 70,963 times on the Bitcoin blockchain.</div>
+        <div class="small-text">It has received a total of 5,148 FXC and has sent a total of 5,147 FXC.</div>
+        <div class="small-text">The current value of this address is 395 FXC.</div>
       </div>
     </section>
 
@@ -49,52 +47,24 @@
       <div>
         <ul style="list-style-type: none;" class="p-0">
           <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Hash</div>
-            <div style="flex: 2" id="hash"></div>
+            <div style="flex: 1">Address</div>
+            <div style="flex: 2" id="address" class="text-nowrap text-truncate"></div>
           </li>
           <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Timestamp</div>
-            <div style="flex: 2" id="timestamp"></div>
+            <div style="flex: 1">Transactions</div>
+            <div style="flex: 2" id="transactions"></div>
           </li>
           <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Height</div>
-            <div style="flex: 2" id="height"></div>
+            <div style="flex: 1">Total Received</div>
+            <div style="flex: 2" id="total-received"></div>
           </li>
           <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Miner</div>
-            <div style="flex: 2" id="miner" class="text-nowrap text-truncate">
-              <a href="#"></a>
-            </div>
+            <div style="flex: 1">Total Sent</div>
+            <div style="flex: 2" id="total-sent" class="text-nowrap text-truncate"></div>
           </li>
           <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Number of Transactions</div>
-            <div style="flex: 2" id="number-of-txs"></div>
-          </li>
-          <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Difficulty</div>
-            <div style="flex: 2" id="difficulty"></div>
-          </li>
-          <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Size</div>
-            <div style="flex: 2" id="size">
-              <span></span> Bytes
-            </div>
-          </li>
-          <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Nonce</div>
-            <div style="flex: 2" id="nonce"></div>
-          </li>
-          <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Transaction Volume</div>
-            <div style="flex: 2" id="tx-volume">
-              <span></span> FXC
-            </div>
-          </li>
-          <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">Block Reward</div>
-            <div style="flex: 2" id="block-reward">
-              <span></span> FXC
-            </div>
+            <div style="flex: 1">Final Balance</div>
+            <div style="flex: 2" id="final-balance"></div>
           </li>
         </ul>
       </div>
@@ -104,12 +74,13 @@
       <header>
         <h4 class="d-flex align-items-center" style="color: #333">
           <img src="/images/transaction_icon.png" alt="transaction_icon.png">
-          &nbsp;<strong>Block Transactions</strong>
+          &nbsp;<strong>Transactions</strong>
         </h4>
       </header>
       <div class="my-4">
         <ul style="list-style-type: none;" class="p-0" id="transaction-list">
           {{!-- load transaction data here --}}
+
         </ul>
       </div>
     </section>
@@ -118,56 +89,38 @@
 
 <script>
   const PORT = 3000;
-  function getBlock(index) {
+  function getAddressInfo(address) {
     $.ajax({
-      url: `http://localhost:${PORT}/api/blocks/${index}`,
+      url: `http://localhost:${PORT}/api/users/address/${address}`,
       type: 'GET'
     }).done(data => {
-      console.log(data.block);
-      
+      console.log(data);
 
+      $('#address').text(data.publicKey);
+      $('#transactions').text(data.txOfAddress.length);
+      $('#total-received').text(data.totalReceived);
+      $('#total-sent').text(data.totalSent);
+      $('#final-balance').text(data.finalBalance);
+
+      // Show all transacted history
+      const txOfAddress = data.txOfAddress;
+      let listElement = "";
+      for (const tx of txOfAddress) {
+        listElement += createTransactionElement(tx, address);
+      }
+      $('#transaction-list').html(listElement);
     });
   }
 
-  function createCoinbaseLiElement(coinbaseTx) {
-    return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
-            <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
-              <div class="mr-5">Hash</div>
-              <div class="text-nowrap text-truncate">
-                <a
-                  href="/explorer/transaction/${coinbaseTx.id}">${coinbaseTx.id}</a>
-                <p class="mt-3 font-weight-bold" style="color: #00875a">COINBASE (Newly Generated Coins)</p>
-              </div>
-            </div>
-
-            <div style="flex: 1" class="d-flex justify-content-center align-items-center">
-              <img src="/images/right-arrow.png" alt="right-arrow.png">
-            </div>
-
-            <div style="flex: 10" class="d-flex pl-4 small-text text-nowrap text-truncate">
+  function createTransactionOutputElement(txOut, address) {
+    if (txOut.address === address) {
+      return `<div class="transaction-out d-flex">
               <div class="text-nowrap text-truncate mr-3">
-                <a href="/explorer/address/${coinbaseTx.txOuts[0].address}">${coinbaseTx.txOuts[0].address}</a>
+                ${txOut.address}
               </div>
-              <div>${coinbaseTx.txOuts[0].amount} FXC</div>
-            </div>
-          </li>`;
-  }
-
-  function createTransactionInputElement(txIn, unspentTxOutsOfBlock) {
-    let ret = "";
-    const result = unspentTxOutsOfBlock.find(uTxO => uTxO.txOutId === txIn.txOutId);
-    if (result) {
-      ret = `<div class="d-flex small-text text-nowrap text-truncate transaction-In">
-              <div class="text-nowrap text-truncate mr-3">
-                <a href="/explorer/address/${result.address}">${result.address}</a>
-              </div>
-              <div>${result.amount} FXC</div>
+              <div>${txOut.amount} FXC</div>
             </div>`;
     }
-    return ret;
-  }
-
-  function createTransactionOutputElement(txOut) {
     return `<div class="transaction-out d-flex">
               <div class="text-nowrap text-truncate mr-3">
                 <a href="/explorer/address/${txOut.address}">${txOut.address}</a>
@@ -176,30 +129,17 @@
             </div>`;
   }
 
-  function createTransactionElement(transaction, unspentTxOutsOfBlock) {
-    const txId = transaction.id;
-    const txIns = transaction.txIns;
-    const txOuts = transaction.txOuts;
-
-    let txInElements = "";
-    for (const txIn of txIns) {
-      txInElements += createTransactionInputElement(txIn, unspentTxOutsOfBlock);
-    }
-
+  function createTransactionElement(transaction, address) {
     let txOutElements = "";
-    for (const txOut of txOuts) {
-      txOutElements += createTransactionOutputElement(txOut);
+    for (const txOut of transaction.txOuts) {
+      txOutElements += createTransactionOutputElement(txOut, address);
     }
-
     return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
             <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
               <div class="mr-5">Hash</div>
               <div class="text-nowrap text-truncate">
                 <a class="transaction-hash"
-                  href="/explorer/transaction/${txId}">${txId}</a>
-                <div class="mt-2 transaction-Ins">
-                  ${txInElements}
-                </div>
+                  href="/explorer/transaction/${transaction.id}">${transaction.id}</a>
               </div>
             </div>
 
@@ -216,9 +156,9 @@
   $(document).ready(function () {
     const currLocation = window.location.href;
     const str = currLocation.split('/');
-    const blockIndex = str[str.length - 1];
-    console.log('Block index: ' + blockIndex);
+    const address = str[str.length - 1];
+    console.log('Public key: ' + address);
 
-    getBlock(blockIndex);
+    getAddressInfo(address);
   })
 </script>

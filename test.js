@@ -146,26 +146,7 @@
 // }
 
 // $('#transaction-list').append(coinbaseLiElement);
-
-
-Swal.fire({
-  title: 'Private Key',
-  html:
-    `<label for="private-key">Private Key</label>` +
-    `<input id="private-key" class="swal2-input" type="text" value="${data.privateKey}" disabled><br>` +
-    `<label for="public-key">Public Key</label>` +
-    `<input id="public-key" class="swal2-input" type="text" value="${data.publicKey}" disabled>`,
-  confirmButtonText: 'Next &rarr;',
-  showCancelButton: false,
-  allowOutsideClick: false,
-  confirmButtonColor: '#6c5ce7',
-  backdrop: `rgba(0,0,0,0.8)`
-
-}).then(result => {
-  Swal.fire({
-    icon: 'success',
-    title: 'Have a nice day!',
-    showConfirmButton: false,
-    timer: 3000
-  })
-})
+const EC = require('elliptic').ec;
+const ec = new EC('secp256k1');
+const key = ec.keyFromPublic("0423c0735f3e7cb6d5502ad6e6e22af7fcf5567a4cfe11bf56639b30917025499036c8307826168b7848c97c617675fd1f8da34b6151690e480642e67dc6c91d5f", 'hex');
+console.log(key.verify("230e3648aab43f05c3156593142b19e3cfb11e9fe02e906b8eba8e83fd720cd1", ""));
