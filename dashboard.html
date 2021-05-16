@@ -199,6 +199,45 @@ background: linear-gradient(to right, #243B55, #141E30); /* W3C, IE 10+/ Edge, F
   <script src="https://kit.fontawesome.com/5ab99f6a6e.js" crossorigin="anonymous"></script>
 
   <script>
+    var strAns1;
+    var strAns2;
+
+    swal.mixin({
+      input: 'text',
+      confirmButtonText: 'Next &rarr;',
+      showCancelButton: true,
+      progressSteps: ['1', '2', '3']
+    }).queue([
+      {
+        title: 'Question 1',
+        text: 'Chaining swal2 modals is easy',
+        preConfirm: function (value) {
+          strAns1 = value;
+        }
+      },
+
+      {
+        title: 'Question 2',
+        text: 'Chaining swal2 modals is easy',
+        preConfirm: function (value) {
+          strAns2 = value;
+        }
+      }
+    ]).then((result) => {
+      if (result.value) {
+        swal({
+          title: 'All done!',
+          html:
+            'Your answers: <pre>' +
+            JSON.stringify(result) +
+            '<pre>Answer1- ' + strAns1 +
+            '<pre>Answer2- ' + strAns2 +
+            '</pre>',
+          confirmButtonText: 'Lovely!'
+        })
+      }
+    })
+
   </script>
 
 </body>

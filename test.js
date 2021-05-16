@@ -111,38 +111,61 @@
 
 // event._socket._host
 // event.target._url
-const nodeUrls = ["dinh","gia", "kiet"];
+// const nodeUrls = ["dinh", "gia", "kiet"];
 
-function isConnectedToNode(url) {
-  return nodeUrls.find(node => node === url) ? true : false;
-}
+// function isConnectedToNode(url) {
+//   return nodeUrls.find(node => node === url) ? true : false;
+// }
 
-console.log(isConnectedToNode("kiet"));
-
-
-function updateBalanceIfReceiveNewBlock(newBlock) {
-  const minedTxs = newBlock.data;
-  const myAddress = $('#my-address').text();
-  const currentBalance = parseInt($('#balance').text());
-  const sentAmount = minedTxs.reduce((allTxIns, tx) => allTxIns.concat(tx.txIns), [])
-    .reduce((amount, txIn) => {
-
-    }, 0)
-  const receivedAmount = minedTxs.reduce((allTxOuts, tx) => allTxOuts.concat(tx.txOuts), [])
-    .reduce((amount, txOut) => {
-      if (txOut.address === myAddress) {
-        amount += txOut.amount;
-      }
-      return amount;
-    }, 0);
-  $('#balance').text(newBalance);
-}
+// console.log(isConnectedToNode("kiet"));
 
 
+// function updateBalanceIfReceiveNewBlock(newBlock) {
+//   const minedTxs = newBlock.data;
+//   const myAddress = $('#my-address').text();
+//   const currentBalance = parseInt($('#balance').text());
+//   const sentAmount = minedTxs.reduce((allTxIns, tx) => allTxIns.concat(tx.txIns), [])
+//     .reduce((amount, txIn) => {
 
-const transactionLiElements = "";
-      for (let i = 1; i < transactions.length; i++) {
-        transactionLiElements += createTransactionElement();
-      }
+//     }, 0)
+//   const receivedAmount = minedTxs.reduce((allTxOuts, tx) => allTxOuts.concat(tx.txOuts), [])
+//     .reduce((amount, txOut) => {
+//       if (txOut.address === myAddress) {
+//         amount += txOut.amount;
+//       }
+//       return amount;
+//     }, 0);
+//   $('#balance').text(newBalance);
+// }
 
-      $('#transaction-list').append(coinbaseLiElement);
+
+
+// const transactionLiElements = "";
+// for (let i = 1; i < transactions.length; i++) {
+//   transactionLiElements += createTransactionElement();
+// }
+
+// $('#transaction-list').append(coinbaseLiElement);
+
+
+Swal.fire({
+  title: 'Private Key',
+  html:
+    `<label for="private-key">Private Key</label>` +
+    `<input id="private-key" class="swal2-input" type="text" value="${data.privateKey}" disabled><br>` +
+    `<label for="public-key">Public Key</label>` +
+    `<input id="public-key" class="swal2-input" type="text" value="${data.publicKey}" disabled>`,
+  confirmButtonText: 'Next &rarr;',
+  showCancelButton: false,
+  allowOutsideClick: false,
+  confirmButtonColor: '#6c5ce7',
+  backdrop: `rgba(0,0,0,0.8)`
+
+}).then(result => {
+  Swal.fire({
+    icon: 'success',
+    title: 'Have a nice day!',
+    showConfirmButton: false,
+    timer: 3000
+  })
+})
