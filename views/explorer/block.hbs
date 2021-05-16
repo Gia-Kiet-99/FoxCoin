@@ -1,4 +1,4 @@
-<div class="container-lg">
+<div class="container-lg p-0">
   <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: rgb(18, 29, 51);">
     <div class="container p-0">
       <a class="navbar-brand" href="/wallet">
@@ -37,15 +37,15 @@
         </h4>
       </header>
       <div class="mt-3">
-        <p class="small-text">This block was mined on <span id="block-timestamp"></span>.</p>
-        <p class="small-text">
+        <div class="small-text">This block was mined on <span id="block-timestamp"></span>.</div>
+        <div class="small-text">
           The miner(s) of this block earned a total reward of <span id="miner-amount"></span> FXC.
-        </p>
-        <p class="small-text">A total of <span id="total-send"></span> FXC were sent.</p>
+        </div>
+        <div class="small-text">A total of <span id="total-send"></span> FXC were sent.</div>
       </div>
     </section>
 
-    <section id="block-detail" class="my-5">
+    <section id="block-detail" class="mb-5 mt-4">
       <div>
         <ul style="list-style-type: none;" class="p-0">
           <li class="data-row d-flex block-data-row">
@@ -109,6 +109,7 @@
       </header>
       <div class="my-4">
         <ul style="list-style-type: none;" class="p-0" id="transaction-list">
+          {{!-- load transaction data here --}}
         </ul>
       </div>
     </section>
@@ -155,10 +156,7 @@
       const transactions = block.data;
       // Render coinbase transaction
       const coinbaseTx = transactions[0];
-      const coinbaseLiElement = createCoinbaseLiElement(
-        coinbaseTx.id,
-        coinbaseTx.txOuts[0].address,
-        coinbaseTx.txOuts[0].amount);
+      const coinbaseLiElement = createCoinbaseLiElement(coinbaseTx);
       $('#transaction-list').append(coinbaseLiElement);
 
       // Render normal transaction
@@ -171,13 +169,13 @@
     });
   }
 
-  function createCoinbaseLiElement(txId, receiver, coinbaseAmount) {
+  function createCoinbaseLiElement(coinbaseTx) {
     return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
             <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
               <div class="mr-5">Hash</div>
               <div class="text-nowrap text-truncate">
                 <a
-                  href="#">${txId}</a>
+                  href="/explorer/transaction/${coinbaseTx.id}">${coinbaseTx.id}</a>
                 <p class="mt-3 font-weight-bold" style="color: #00875a">COINBASE (Newly Generated Coins)</p>
               </div>
             </div>
@@ -188,9 +186,9 @@
 
             <div style="flex: 10" class="d-flex pl-4 small-text text-nowrap text-truncate">
               <div class="text-nowrap text-truncate mr-3">
-                <a href="#">${receiver}</a>
+                <a href="/explorer/address/${coinbaseTx.txOuts[0].address}">${coinbaseTx.txOuts[0].address}</a>
               </div>
-              <div>${coinbaseAmount} FXC</div>
+              <div>${coinbaseTx.txOuts[0].amount} FXC</div>
             </div>
           </li>`;
   }
@@ -201,7 +199,7 @@
     if (result) {
       ret = `<div class="d-flex small-text text-nowrap text-truncate transaction-In">
               <div class="text-nowrap text-truncate mr-3">
-                <a href="#">${result.txOutId}</a>
+                <a href="/explorer/address/${result.address}">${result.address}</a>
               </div>
               <div>${result.amount} FXC</div>
             </div>`;
@@ -212,7 +210,7 @@
   function createTransactionOutputElement(txOut) {
     return `<div class="transaction-out d-flex">
               <div class="text-nowrap text-truncate mr-3">
-                <a href="#">${txOut.address}</a>
+                <a href="/explorer/address/${txOut.address}">${txOut.address}</a>
               </div>
               <div>${txOut.amount} FXC</div>
             </div>`;
@@ -238,7 +236,7 @@
               <div class="mr-5">Hash</div>
               <div class="text-nowrap text-truncate">
                 <a class="transaction-hash"
-                  href="#">${txId}</a>
+                  href="/explorer/transaction/${txId}">${txId}</a>
                 <div class="mt-2 transaction-Ins">
                   ${txInElements}
                 </div>

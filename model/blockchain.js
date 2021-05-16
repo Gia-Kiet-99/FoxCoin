@@ -241,19 +241,6 @@ function generateNextBlock(myAddress) {
   }
 }
 
-// const generatenextBlockWithTransaction = (receiverAddress, amount) => {
-//   if (!isValidAddress(receiverAddress)) {
-//     throw Error('invalid address');
-//   }
-//   if (typeof amount !== 'number') {
-//     throw Error('invalid amount');
-//   }
-//   const coinbaseTx = getCoinbaseTransaction(getPublicFromWallet(), getLatestBlock().index + 1);
-//   const tx = createTransaction(receiverAddress, amount, getPrivateFromWallet(), getUnspentTxOuts(), getTransactionPool());
-//   const blockData = [coinbaseTx, tx];
-//   return generateRawNextBlock(blockData);
-// };
-
 function getMyUnspentTransactionOutputs() {
   const myAddress = getPublicFromWallet();
   return findUnspentTxOuts(myAddress, getUnspentTxOuts());
@@ -364,6 +351,17 @@ function replaceChain(newChain) {
 
 function handleReceivedTransaction(transaction) {
   addToTransactionPool(transaction, getUnspentTxOuts());
+}
+
+function findTransaction(id) {
+  for (const block of blockchain) {
+    for (const tx of block.data) {
+      if (tx.id === id) {
+        return { transaction: tx, blockIndex: block.index }
+      }
+    }
+  }
+  return { transaction: null, blockIndex: NaN }
 }
 
 /* ######################################################################################*/
@@ -641,5 +639,5 @@ module.exports = {
   getSockets,
   broadcastTransactionPool,
   connectToPeers,
-  getBlock
+  getBlock, findTransaction
 }

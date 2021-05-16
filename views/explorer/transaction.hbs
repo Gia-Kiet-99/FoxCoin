@@ -1,0 +1,223 @@
+<div class="container-lg p-0">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-light" style="background-color: rgb(18, 29, 51);">
+    <div class="container p-0">
+      <a class="navbar-brand" href="/wallet">
+        <img src="/images/fox_icon.png" class="rounded-circle" width="40" height="40" alt="foxicon">
+        &nbsp;&nbsp;<strong class="text-white">FOX</strong>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse d-flex" id="navbarNav">
+        <ul class="navbar-nav d-flex justify-content-center" style="flex: 1">
+          <li class="nav-item mx-2">
+            <a class="nav-link px-1" href="/wallet">
+              <h6 style="font-size: 1em; color: #999"><strong>Wallet</strong></h6> <span
+                class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item mx-2">
+            <a class="nav-link pb-0 px-1" href="/explorer"
+              style="border-bottom: 2px solid #8c7ae6; border-radius: 5px;">
+              <h6 style="color: #eee; font-size: 1em;"><strong>Explorer</strong></h6>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main style="padding-top: 120px; padding-bottom: 50px">
+    <header>
+      <h4 class="d-flex align-items-center" style="color: #333">
+        <strong>Details</strong>
+      </h4>
+    </header>
+
+    <section id="transaction-detail" class="mb-5 mt-4">
+      <div>
+        <ul style="list-style-type: none;" class="p-0">
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Hash</div>
+            <div style="flex: 2" id="hash"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">IsConfirmed</div>
+            <div style="flex: 2" id="is-confirmed"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Size</div>
+            <div style="flex: 2" id="size"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Included in Block</div>
+            <div style="flex: 2" id="block-index" class="text-nowrap text-truncate"></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="transaction-inputs" class="mb-5 mt-3">
+      <header>
+        <h4 class="d-flex align-items-center" style="color: #333">
+          <strong>Transaction Inputs</strong>
+        </h4>
+      </header>
+      <div>
+        <ul style="list-style-type: none;" class="p-0" id="inputs-list">
+          {{!-- load transaction inputs here --}}
+        </ul>
+      </div>
+    </section>
+
+    <section id="transaction-outputs" class="mb-5 mt-3">
+      <header>
+        <h4 class="d-flex align-items-center" style="color: #333">
+          <strong>Transaction Outputs</strong>
+        </h4>
+      </header>
+      <div>
+        <ul style="list-style-type: none;" class="p-0" id="outputs-list">
+          {{!-- load transaction outputs here --}}
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const PORT = 3000;
+  function getTransaction(id) {
+    $.ajax({
+      url: `http://localhost:${PORT}/api/transactions/${id}`,
+      type: 'GET'
+    }).done(data => {
+      console.log(data);
+      const transaction = data.transaction;
+      const status = data.status;
+      const blockIndex = data.blockIndex;
+      const unspentTxOutsOfTransaction = data.unspentTxOutsOfTransaction;
+
+      // Show transaction detail
+      $('#hash').text(transaction.id);
+      $('#is-confirmed').text(status);
+      $('#size').text(JSON.stringify(transaction).length);
+      $('#block-index').html(`<a href="/explorer/block/${blockIndex}">${blockIndex}</a>`);
+
+      // Show transaction inputs
+      const txIns = transaction.txIns;
+      let inputList = "";
+      for (let index = 0; index < txIns.length; index++) {
+        inputList += createInputElement(txIns[index], unspentTxOutsOfTransaction, index);
+      }
+      $('#inputs-list').html(inputList);
+
+      // Show transaction outputs
+      const txOuts = transaction.txOuts;
+      let outputList = ""
+      for (let index = 0; index < txOuts.length; index++) {
+        outputList += createOutputElement(txOuts[index], index);
+      }
+      $('#outputs-list').html(outputList);
+    });
+  }
+
+  function createInputElement(txIn, unspentTxOuts, index) {
+    const unspentTxOut = unspentTxOuts.find(uTxO =>
+      uTxO.txOutId === txIn.txOutId && uTxO.txOutIndex === txIn.txOutIndex);
+    if (unspentTxOut) {
+      return `<li class="px-3 py-3 hover-gray-background light-border-bottom">
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Index</div>
+              <div style="flex: 10" class="input-index">${index}</div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Reference Tx</div>
+              <div style="flex: 10" class="reference-tx">
+                <a href="/explorer/transaction/${txIn.txOutId}">${txIn.txOutId}</a>
+              </div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Address</div>
+              <div style="flex: 10" class="text-nowrap text-truncate input-address">
+                <a href="/explorer/address/${unspentTxOut.address}">${unspentTxOut.address}</a>
+              </div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Amount</div>
+              <div style="flex: 10"><span class="input-amount">${unspentTxOut.amount}</span> FXO</div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Signature</div>
+              <div class="text-nowrap text-truncate" style="flex: 10" class="signature">${txIn.signature}</div>
+            </div>
+          </li>`;
+    } else {
+      return `<li class="px-3 py-3 hover-gray-background light-border-bottom">
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Index</div>
+              <div style="flex: 10" class="input-index">${index}</div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Reference Tx</div>
+              <div style="flex: 10" class="reference-tx">
+                <a href="#">undefined</a>
+              </div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Address</div>
+              <div style="flex: 10" class="text-nowrap text-truncate input-address">
+                <a href="#">undefined</a>
+              </div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Amount</div>
+              <div style="flex: 10"><span class="input-amount">NaN</span></div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Signature</div>
+              <div class="text-nowrap text-truncate" style="flex: 10" class="signature">undefined</div>
+            </div>
+          </li>`;
+    }
+  }
+
+  function createOutputElement(txOut, index) {
+    return `<li class="px-3 py-3 hover-gray-background light-border-bottom">
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Index</div>
+              <div style="flex: 10" class="output-index">${index}</div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Address</div>
+              <div style="flex: 10" class="text-nowrap text-truncate output-address">
+                <a href="/explorer/address/${txOut.address}">${txOut.address}</a>
+              </div>
+            </div>
+
+            <div class="d-flex small-text py-1">
+              <div class="mr-4" style="flex: 1">Amount</div>
+              <div style="flex: 10"><span class="output-amount">${txOut.amount}</span> FXO</div>
+            </div>
+          </li>`;
+  }
+
+  $(document).ready(function () {
+    const currLocation = window.location.href;
+    const str = currLocation.split('/');
+    const transId = str[str.length - 1];
+    console.log('Transaction id: ' + transId);
+
+    getTransaction(transId);
+  })
+</script>

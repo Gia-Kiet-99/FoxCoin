@@ -9,7 +9,7 @@ const txPoolModel = require('../model/transaction-pool');
 router.get('/', (req, res) => {
   const blockchain = blockModel.getBlockChain().map(block => ({
     index: block.index,
-    timestamp: moment(block.timestamp*1000).fromNow(),
+    timestamp: moment(block.timestamp * 1000).fromNow(),
     miner: 'undefined',
     size: JSON.stringify(block).length
   }));
@@ -27,14 +27,36 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/block/:index', (req, res) => {
+router.get('/block/:index', (req, res, next) => {
   const index = parseInt(req.params.index);
-  const block = blockModel.getBlock(index);
 
-  res.render('explorer/block', {
-    title: "Block detail"
-    // block: block,
-  });
+  if (blockModel.getLatestBlock().index < index) {
+    next();
+  } else {
+    const block = blockModel.getBlock(index);
+    res.render('explorer/block', {
+      title: "Block detail"
+    });
+  }
+});
+
+router.get('/transaction/:id', (req, res, next) => {
+  const id = req.params.id;
+  const confirmedTx = blockModel.getBlockChain().map(block => block.data).flat()
+    .find(tx => tx.id === id);
+  const unconfirmedTx = txPoolModel.getTransactionPool().find(tx => tx.id === id);
+
+  if (confirmedTx || unconfirmedTx) {
+    res.render('explorer/transaction', { title: "Transaction detail" });
+  } else {
+    next();
+  }
+});
+
+router.get('/address/:publicKey', (req, res) => {
+  const publicKey = req.params.publicKey;
+
+  res.render('explorer/address', { title: "Address detail" });
 })
 
 

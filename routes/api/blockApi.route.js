@@ -40,7 +40,7 @@ router.get('/:index', (req, res) => {
     }
   }
   // console.log(unspentTxOutsOfBlock);
-  res.json({block, unspentTxOutsOfBlock});
+  res.json({ block, unspentTxOutsOfBlock });
 })
 
 
