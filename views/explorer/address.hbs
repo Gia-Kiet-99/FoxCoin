@@ -37,9 +37,9 @@
         </h4>
       </header>
       <div class="mt-3">
-        <div class="small-text">This address has transacted 70,963 times on the Bitcoin blockchain.</div>
-        <div class="small-text">It has received a total of 5,148 FXC and has sent a total of 5,147 FXC.</div>
-        <div class="small-text">The current value of this address is 395 FXC.</div>
+        <div class="small-text">This address has transacted <span id="summary-total-transaction"></span> times on the Foxcoin blockchain.</div>
+        <div class="small-text">It has received a total of <span id="summary-total-received"></span> FXC and has sent a total of <span id="summary-total-sent"></span> FXC.</div>
+        <div class="small-text">The current value of this address is <span id="summary-balance"></span> FXC.</div>
       </div>
     </section>
 
@@ -80,7 +80,6 @@
       <div class="my-4">
         <ul style="list-style-type: none;" class="p-0" id="transaction-list">
           {{!-- load transaction data here --}}
-
         </ul>
       </div>
     </section>
@@ -96,20 +95,101 @@
     }).done(data => {
       console.log(data);
 
+      $('#summary-total-transaction').text(data.txOfAddress.length);
+      $('#summary-total-received').text(data.totalReceived);
+      $('#summary-total-sent').text(data.totalSent);
+      $('#summary-balance').text(data.finalBalance);
+
       $('#address').text(data.publicKey);
       $('#transactions').text(data.txOfAddress.length);
       $('#total-received').text(data.totalReceived);
       $('#total-sent').text(data.totalSent);
       $('#final-balance').text(data.finalBalance);
 
+      
+
       // Show all transacted history
       const txOfAddress = data.txOfAddress;
       let listElement = "";
       for (const tx of txOfAddress) {
-        listElement += createTransactionElement(tx, address);
+        if (tx.txIns[0].signature === "") {
+          listElement += createCoinbaseLiElement(tx);
+        } else {
+          listElement += createTransactionElement(tx, address, data.allTxInputDetail);
+        }
       }
       $('#transaction-list').html(listElement);
     });
+  }
+
+  function createCoinbaseLiElement(coinbaseTx) {
+    if(coinbaseTx.txIns[0].txOutId) {
+      return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
+            <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
+              <div class="mr-5">Hash</div>
+              <div class="text-nowrap text-truncate">
+                <a
+                  href="/explorer/transaction/${coinbaseTx.id}">${coinbaseTx.id}</a>
+                <p class="mt-3 font-weight-bold" style="color: #00875a">SIGNUP REWARD (Newly Generated Coins)</p>
+              </div>
+            </div>
+
+            <div style="flex: 1" class="d-flex justify-content-center align-items-center">
+              <img src="/images/right-arrow.png" alt="right-arrow.png">
+            </div>
+
+            <div style="flex: 10" class="d-flex pl-4 small-text text-nowrap text-truncate">
+              <div class="text-nowrap text-truncate mr-3">
+                ${coinbaseTx.txOuts[0].address}
+              </div>
+              <div>${coinbaseTx.txOuts[0].amount} FXC</div>
+            </div>
+          </li>`;
+    }
+    return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
+            <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
+              <div class="mr-5">Hash</div>
+              <div class="text-nowrap text-truncate">
+                <a
+                  href="/explorer/transaction/${coinbaseTx.id}">${coinbaseTx.id}</a>
+                <p class="mt-3 font-weight-bold" style="color: #00875a">COINBASE (Newly Generated Coins)</p>
+              </div>
+            </div>
+
+            <div style="flex: 1" class="d-flex justify-content-center align-items-center">
+              <img src="/images/right-arrow.png" alt="right-arrow.png">
+            </div>
+
+            <div style="flex: 10" class="d-flex pl-4 small-text text-nowrap text-truncate">
+              <div class="text-nowrap text-truncate mr-3">
+                ${coinbaseTx.txOuts[0].address}
+              </div>
+              <div>${coinbaseTx.txOuts[0].amount} FXC</div>
+            </div>
+          </li>`;
+  }
+
+  function createTransactionInputElement(txIn, allTxInputDetail, address) {
+    let ret = "";
+    const result = allTxInputDetail.find(uTxO => uTxO.txOutId === txIn.txOutId);
+    if (result) {
+      if (result.address === address) {
+        ret = `<div class="d-flex small-text text-nowrap text-truncate transaction-In">
+              <div class="text-nowrap text-truncate mr-3">
+                ${result.address}
+              </div>
+              <div>${result.amount} FXC</div>
+            </div>`;
+      } else {
+        ret = `<div class="d-flex small-text text-nowrap text-truncate transaction-In">
+              <div class="text-nowrap text-truncate mr-3">
+                <a href="/explorer/address/${result.address}">${result.address}</a>
+              </div>
+              <div>${result.amount} FXC</div>
+            </div>`;
+      }
+    }
+    return ret;
   }
 
   function createTransactionOutputElement(txOut, address) {
@@ -129,17 +209,26 @@
             </div>`;
   }
 
-  function createTransactionElement(transaction, address) {
+  function createTransactionElement(transaction, address, allTxInputDetail) {
+    let txInElements = "";
+    for (const txIn of transaction.txIns) {
+      txInElements += createTransactionInputElement(txIn, allTxInputDetail, address);
+    }
+
     let txOutElements = "";
     for (const txOut of transaction.txOuts) {
       txOutElements += createTransactionOutputElement(txOut, address);
     }
+
     return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
             <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
               <div class="mr-5">Hash</div>
               <div class="text-nowrap text-truncate">
                 <a class="transaction-hash"
                   href="/explorer/transaction/${transaction.id}">${transaction.id}</a>
+                <div class="mt-2 transaction-Ins">
+                  ${txInElements}
+                </div>
               </div>
             </div>
 

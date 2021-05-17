@@ -141,10 +141,12 @@
       $('#total-send').text(totalSend);
 
       // Update block data
+      const minerAddress = block.data[0].txOuts[0].address;
       $('#hash').text(block.hash);
       $('#timestamp').text(moment(block.timestamp * 1000).format('LLL'));
       $('#height').text(block.index);
-      $('#miner > a').text(block.data[0].txOuts[0].address);
+      $('#miner > a').text(minerAddress);
+      $('#miner > a').attr('href', `/explorer/address/${minerAddress}`);
       $('#number-of-txs').text(block.data.length);
       $('#difficulty').text(block.difficulty);
       $('#size > span').text(JSON.stringify(block).length);
@@ -155,21 +157,48 @@
       // Render transactions data
       const transactions = block.data;
       // Render coinbase transaction
-      const coinbaseTx = transactions[0];
-      const coinbaseLiElement = createCoinbaseLiElement(coinbaseTx);
-      $('#transaction-list').append(coinbaseLiElement);
+      //const coinbaseTx = transactions[0];
+      //const coinbaseLiElement = createCoinbaseLiElement(coinbaseTx);
+      //$('#transaction-list').append(coinbaseLiElement);
 
-      // Render normal transaction
-      let transactionElement = "";
-      for (let i = 1; i < transactions.length; i++) {
-        transactionElement = createTransactionElement(transactions[i], unspentTxOutsOfBlock);
-        $('#transaction-list').append(transactionElement);
+      // Render transactions
+      let transactionElements = "";
+      for (const tx of transactions) {
+        if (tx.txIns[0].signature === "") {
+          transactionElements += createCoinbaseLiElement(tx);
+        } else {
+          transactionElements += createTransactionElement(tx, unspentTxOutsOfBlock);
+        }
       }
+      $('#transaction-list').html(transactionElements);
 
     });
   }
 
   function createCoinbaseLiElement(coinbaseTx) {
+    if (coinbaseTx.txIns[0].txOutId) {
+      return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
+            <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
+              <div class="mr-5">Hash</div>
+              <div class="text-nowrap text-truncate">
+                <a
+                  href="/explorer/transaction/${coinbaseTx.id}">${coinbaseTx.id}</a>
+                <p class="mt-3 font-weight-bold" style="color: #00875a">SIGNUP REWARD (Newly Generated Coins)</p>
+              </div>
+            </div>
+
+            <div style="flex: 1" class="d-flex justify-content-center align-items-center">
+              <img src="/images/right-arrow.png" alt="right-arrow.png">
+            </div>
+
+            <div style="flex: 10" class="d-flex pl-4 small-text text-nowrap text-truncate">
+              <div class="text-nowrap text-truncate mr-3">
+                <a href="/explorer/address/${coinbaseTx.txOuts[0].address}">${coinbaseTx.txOuts[0].address}</a>
+              </div>
+              <div>${coinbaseTx.txOuts[0].amount} FXC</div>
+            </div>
+          </li>`;
+    }
     return `<li class="d-flex px-3 py-4 hover-gray-background light-border-bottom">
             <div style="flex: 10" class="d-flex pr-4 small-text text-nowrap text-truncate">
               <div class="mr-5">Hash</div>

@@ -364,6 +364,26 @@ function findTransaction(id) {
   return { transaction: null, blockIndex: NaN }
 }
 
+function getTransactionInputDetail(transaction, blockchain) {
+  const allTransaction = blockchain.map(block => block.data).flat();
+
+  const txIns = transaction.txIns;
+  const inputDetailOfTransaction = [];
+
+  for (const txIn of txIns) {
+    const referenceTx = allTransaction.find(tx => tx.id === txIn.txOutId);
+    if (referenceTx) {
+      inputDetailOfTransaction.push({
+        txOutId: txIn.txOutId,
+        txOutIndex: txIn.txOutIndex,
+        address: referenceTx.txOuts[txIn.txOutIndex].address,
+        amount: referenceTx.txOuts[txIn.txOutIndex].amount
+      })
+    }
+  }
+  return inputDetailOfTransaction;
+}
+
 /* ######################################################################################*/
 const WebSocket = require('ws');
 
@@ -639,5 +659,6 @@ module.exports = {
   getSockets,
   broadcastTransactionPool,
   connectToPeers,
-  getBlock, findTransaction
+  getBlock, findTransaction,
+  getTransactionInputDetail
 }

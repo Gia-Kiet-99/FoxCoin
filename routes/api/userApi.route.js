@@ -67,15 +67,24 @@ router.get('/address/:publicKey', (req, res) => {
   let totalSent = 0;
   let totalReceived = 0;
 
+  /** allTxInputDetail
+   * All input detail of transaction which was sent or reveiced by address
+   * (txIn include txOutId, txOutIndex, address, amount)
+   * */
+  let allTxInputDetail = []; 
   let txOfAddress = [];
   const allTransaction = blockModel.getBlockChain().map(block => block.data).flat();
   for (const tx of allTransaction) {
     if (tx.txIns[0].signature && key.verify(tx.id, tx.txIns[0].signature)) {
       totalSent += tx.txOuts[0].amount;
       txOfAddress.push(tx);
+      const inputDetailOfTransaction = blockModel.getTransactionInputDetail(tx, blockModel.getBlockChain())
+      allTxInputDetail.push(...inputDetailOfTransaction);
     } else if (tx.txOuts[0].address === publicKey) {
       totalReceived += tx.txOuts[0].amount;
       txOfAddress.push(tx);
+      const inputDetailOfTransaction = blockModel.getTransactionInputDetail(tx, blockModel.getBlockChain())
+      allTxInputDetail.push(...inputDetailOfTransaction);
     }
   }
 
@@ -86,7 +95,8 @@ router.get('/address/:publicKey', (req, res) => {
     totalReceived,
     totalSent,
     finalBalance,
-    txOfAddress
+    txOfAddress,
+    allTxInputDetail
   });
 })
 
