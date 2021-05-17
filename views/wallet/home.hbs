@@ -103,9 +103,13 @@
                       {{#each transactionPool}}
                       <tr>
                         <th scope="row">
-                          <a class="custom-color transaction-id" href="#">{{this.id}}</a>
+                          <a class="custom-color transaction-id" target="_blank"
+                            href="/explorer/transaction/{{this.id}}">{{this.id}}</a>
                         </th>
-                        <td>{{this.receiver}}</td>
+                        <td>
+                          <a class="custom-color transaction-id" target="_blank"
+                            href="/explorer/address/{{this.receiver}}">{{this.receiver}}</a>
+                        </td>
                         <td>{{this.amount}}</td>
                       </tr>
                       {{/each}}
@@ -157,8 +161,14 @@
           let rows = '';
           for (const tx of data) {
             rows += `<tr>
-                      <th scope="row"><a class="transaction-id custom-color" href="#">${tx.id}</a></th>
-                      <td>${tx.txOuts[0].address}</td>
+                      <th scope="row">
+                        <a class="transaction-id custom-color" target="_blank"
+                        href="/explorer/transaction/${tx.id}">${tx.id}</a>
+                      </th>
+                      <td>
+                        <a class="custom-color transaction-id" target="_blank"
+                            href="/explorer/address/${tx.txOuts[0].address}">${tx.txOuts[0].address}</a>
+                      </td>
                       <td>${tx.txOuts[0].amount}</td>
                     </tr>`
           }

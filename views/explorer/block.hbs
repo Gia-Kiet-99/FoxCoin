@@ -53,6 +53,12 @@
             <div style="flex: 2" id="hash"></div>
           </li>
           <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Previous Hash</div>
+            <div style="flex: 2" id="previous-hash">
+              <a href="#"></a>
+            </div>
+          </li>
+          <li class="data-row d-flex block-data-row">
             <div style="flex: 1">Timestamp</div>
             <div style="flex: 2" id="timestamp"></div>
           </li>
@@ -143,6 +149,8 @@
       // Update block data
       const minerAddress = block.data[0].txOuts[0].address;
       $('#hash').text(block.hash);
+      $('#previous-hash > a').text(block.previousHash);
+      $('#previous-hash > a').attr('href', `/explorer/block/${block.index - 1}`);
       $('#timestamp').text(moment(block.timestamp * 1000).format('LLL'));
       $('#height').text(block.index);
       $('#miner > a').text(minerAddress);

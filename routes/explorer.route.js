@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     index: block.index,
     timestamp: moment(block.timestamp * 1000).fromNow(),
     miner: 'undefined',
-    size: JSON.stringify(block).length
+    size: JSON.stringify(block).length,
   }));
   const transactionPool = txPoolModel.getTransactionPool().map(tx => {
     return {
@@ -20,10 +20,21 @@ router.get('/', (req, res) => {
       amount: tx.txOuts[0].amount
     }
   });
+  const allTxs = blockModel.getBlockChain().map(block => block.data).flat();
+  const minedCoin = allTxs.reduce((sum, tx) => {
+    if (tx.txIns[0].signature === "") {
+      sum += tx.txOuts[0].amount;
+    }
+    return sum;
+  }, 0);
+
   res.render('explorer/explorer', {
     title: "Explorer",
     blockchain: blockchain.reverse(),
-    transactionPool: transactionPool.reverse()
+    transactionPool: transactionPool.reverse(),
+    minedCoin: minedCoin,
+    numOfTransaction: allTxs.length,
+    currentDifficulty: blockModel.getLatestBlock().difficulty
   });
 });
 
@@ -58,7 +69,7 @@ router.get('/address/:publicKey', (req, res, next) => {
   const result = blockModel.getBlockChain().map(block => block.data).flat()
     .map(tx => tx.txOuts).flat().find(txOut => txOut.address === publicKey);
 
-  if(!result) {
+  if (!result) {
     next();
   }
 

@@ -28,17 +28,45 @@
     </div>
   </nav>
 
-  <main style="padding-top: 120px;">
-    <div class="row" style="max-height: 100vh">
+  <main style="padding-top: 120px; max-height: 100vh;">
+    <div class="row d-flex small-text">
+      <div class="d-flex px-4 py-3 rounded-lg info shadow-sm align-items-center"
+        style="color: #eee; background-color: #8c7ae6;">
+        <i class="fas fa-coins" style="font-size: 32px;"></i>
+        <div class="ml-4 text-nowrap text-truncate">
+          <div>Mined Coin</div>
+          <div>{{minedCoin}} FXC</div>
+        </div>
+      </div>
 
-      <div class="col-sm-6 rounded-lg p-0" style="color: #eee;">
-        <div class="card border-0 shadow-sm mr-2">
-          <div class="card-header" style="background-color: #6c5ce7;">
-            <h5 style="margin-bottom: 0;"><strong>Latest blocks</strong></h5>
+      <div class="d-flex px-4 py-3 ml-3 rounded-lg info shadow-sm align-items-center"
+        style="color: #eee;background-color: #6c5ce7;">
+        <img src="images/pickaxe.png" alt="difficulty.png" width="32" height="32">
+        <div class="ml-4">
+          <div>Current Difficulty</div>
+          <div>{{currentDifficulty}}</div>
+        </div>
+      </div>
+
+      <div class="d-flex px-4 py-3 ml-3 rounded-lg info shadow-sm align-items-center"
+        style="color: #eee;background-color: #6c5ce7;">
+        <img src="images/transaction.png" alt="transaction.png" width="32" height="32">
+        <div class="ml-4">
+          <div>Number of Transactions</div>
+          <div>{{numOfTransaction}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-sm-6 rounded-lg p-0">
+        <div class="card shadow-sm mr-2" style="border: .5px solid rgb(236, 236, 236);">
+          <div class="card-header" style="background-color: transparent;">
+            <div style="margin-bottom: 0;"><strong>Latest blocks</strong></div>
             <small>The most recently mined blocks</small>
           </div>
           <div class="card-body">
-            <table class="table table-borderless" id="block-table">
+            <table class="table table-borderless small-text" id="block-table">
               <thead>
                 <tr>
                   <th scope="col">Height</th>
@@ -64,14 +92,14 @@
         </div>
       </div>
 
-      <div class="col-sm-6 rounded-lg p-0" style="color: #eee;">
-        <div class="card border-0 shadow-sm ml-2">
-          <div class="card-header" style="background-color: #6c5ce7;">
-            <h5 style="margin-bottom: 0;"><strong>Latest Transactions</strong></h5>
+      <div class="col-sm-6 rounded-lg p-0">
+        <div class="card shadow-sm ml-2" style="border: .5px solid rgb(236, 236, 236);">
+          <div class="card-header" style="background-color: transparent;">
+            <div style="margin-bottom: 0;"><strong>Latest Transactions</strong></div>
             <small>The most recently published unconfirmed transactions</small>
           </div>
           <div class="card-body">
-            <table class="table table-borderless" id="transaction-table">
+            <table class="table table-borderless small-text" id="transaction-table">
               <thead>
                 <tr>
                   <th scope="col">Hash</th>
@@ -144,7 +172,8 @@
           for (const tx of data) {
             rows.unshift(`<tr>
                       <th scope="row">
-                        <a class="custom-color transaction-id" href="/explorer/transaction/${tx.id}">${tx.id}</a>
+                        <a class="custom-color transaction-id" 
+                          href="/explorer/transaction/${tx.id}">${tx.id}</a>
                       </th>
                       <td>${tx.txOuts[0].address}</td>
                       <td>${tx.txOuts[0].amount}</td>
