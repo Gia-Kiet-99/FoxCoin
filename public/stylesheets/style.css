@@ -144,3 +144,17 @@ a.custom-color:hover {
 .light-border-bottom {
   border-bottom: .5px solid #eee;
 }
+
+.danger-button {
+  color: rgb(217, 59, 48);
+  padding: 4px 8px;
+  background-color: rgb(245, 217, 215);
+  display: inline;
+}
+
+.success-button {
+  color: rgb(0, 135, 90);
+  padding: 4px 8px;
+  background-color: rgb(209, 240, 219);
+  display: inline;
+}

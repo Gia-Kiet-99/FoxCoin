@@ -171,7 +171,8 @@
 
   function createTransactionInputElement(txIn, allTxInputDetail, address) {
     let ret = "";
-    const result = allTxInputDetail.find(uTxO => uTxO.txOutId === txIn.txOutId);
+    const result = allTxInputDetail.find(
+      uTxO => uTxO.txOutId === txIn.txOutId && uTxO.txOutIndex === txIn.txOutIndex);
     if (result) {
       if (result.address === address) {
         ret = `<div class="d-flex small-text text-nowrap text-truncate transaction-In">

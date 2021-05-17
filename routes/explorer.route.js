@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
   const blockchain = blockModel.getBlockChain().map(block => ({
     index: block.index,
     timestamp: moment(block.timestamp * 1000).fromNow(),
-    miner: 'undefined',
+    miner: block.data[0].txOuts[0].address,
     size: JSON.stringify(block).length,
   }));
   const transactionPool = txPoolModel.getTransactionPool().map(tx => {

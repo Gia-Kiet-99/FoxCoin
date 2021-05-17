@@ -43,7 +43,7 @@
             <div style="flex: 2" id="hash"></div>
           </li>
           <li class="data-row d-flex block-data-row">
-            <div style="flex: 1">IsConfirmed</div>
+            <div style="flex: 1">Status</div>
             <div style="flex: 2" id="is-confirmed"></div>
           </li>
           <li class="data-row d-flex block-data-row">
@@ -101,9 +101,17 @@
 
       // Show transaction detail
       $('#hash').text(transaction.id);
-      $('#is-confirmed').text(status);
+      if (status) {
+        $('#is-confirmed').html("<span class='success-button'>Confirmed</span>");
+      } else {
+        $('#is-confirmed').html("<span class='danger-button'>Unconfirmed</span>");
+      }
       $('#size').text(JSON.stringify(transaction).length);
-      $('#block-index').html(`<a href="/explorer/block/${blockIndex}">${blockIndex}</a>`);
+      if (blockIndex) {
+        $('#block-index').html(`<a href="/explorer/block/${blockIndex}">${blockIndex}</a>`);
+      } else {
+        $('#block-index').text("NaN");
+      }
 
       // Show transaction inputs
       const txIns = transaction.txIns;
@@ -166,16 +174,12 @@
 
             <div class="d-flex small-text py-1">
               <div class="mr-4" style="flex: 1">Reference Tx</div>
-              <div style="flex: 10" class="reference-tx">
-                <a href="#">undefined</a>
-              </div>
+              <div style="flex: 10" class="reference-tx">undefined</div>
             </div>
 
             <div class="d-flex small-text py-1">
               <div class="mr-4" style="flex: 1">Address</div>
-              <div style="flex: 10" class="text-nowrap text-truncate input-address">
-                <a href="#">undefined</a>
-              </div>
+              <div style="flex: 10" class="text-nowrap text-truncate input-address">undefined</div>
             </div>
 
             <div class="d-flex small-text py-1">

@@ -35,7 +35,7 @@
         <i class="fas fa-coins" style="font-size: 32px;"></i>
         <div class="ml-4 text-nowrap text-truncate">
           <div>Mined Coin</div>
-          <div>{{minedCoin}} FXC</div>
+          <div><span id="mined-coin">{{minedCoin}}</span> FXC</div>
         </div>
       </div>
 
@@ -44,7 +44,7 @@
         <img src="images/pickaxe.png" alt="difficulty.png" width="32" height="32">
         <div class="ml-4">
           <div>Current Difficulty</div>
-          <div>{{currentDifficulty}}</div>
+          <div id="curr-difficulty">{{currentDifficulty}}</div>
         </div>
       </div>
 
@@ -53,7 +53,7 @@
         <img src="images/transaction.png" alt="transaction.png" width="32" height="32">
         <div class="ml-4">
           <div>Number of Transactions</div>
-          <div>{{numOfTransaction}}</div>
+          <div id="num-of-transation">{{numOfTransaction}}</div>
         </div>
       </div>
     </div>
@@ -69,20 +69,22 @@
             <table class="table table-borderless small-text" id="block-table">
               <thead>
                 <tr>
-                  <th scope="col">Height</th>
-                  <th scope="col">Mined</th>
-                  <th scope="col">Miner</th>
-                  <th scope="col">Size</th>
+                  <th scope="col" style="font-size: 14px;">Height</th>
+                  <th scope="col" style="font-size: 14px;">Mined</th>
+                  <th scope="col" style="font-size: 14px;">Miner</th>
+                  <th scope="col" style="font-size: 14px;">Size (Byte)</th>
                 </tr>
               </thead>
               <tbody id="block-rows">
                 {{#each blockchain}}
                 <tr>
-                  <th scope="row">
-                    <a class="custom-color" href="/explorer/block/{{this.index}}">{{this.index}}</a>
-                  </th>
+                  <td scope="row">
+                    <a href="/explorer/block/{{this.index}}">{{this.index}}</a>
+                  </td>
                   <td>{{this.timestamp}}</td>
-                  <td>{{this.miner}}</td>
+                  <td>
+                    <a href="/explorer/address/{{this.miner}}">{{this.miner}}</a>
+                  </td>
                   <td>{{this.size}}</td>
                 </tr>
                 {{/each}}
@@ -102,18 +104,20 @@
             <table class="table table-borderless small-text" id="transaction-table">
               <thead>
                 <tr>
-                  <th scope="col">Hash</th>
-                  <th scope="col">Receiver</th>
-                  <th scope="col">Amount (FXC)</th>
+                  <th scope="col" style="font-size: 14px;">Hash</th>
+                  <th scope="col" style="font-size: 14px;">Receiver</th>
+                  <th scope="col" style="font-size: 14px;">Amount (FXC)</th>
                 </tr>
               </thead>
               <tbody id="transaction-rows">
                 {{#each transactionPool}}
                 <tr>
-                  <th scope="row">
-                    <a class="custom-color transaction-id" href="/explorer/transaction/{{this.id}}">{{this.id}}</a>
-                  </th>
-                  <td>{{this.receiver}}</td>
+                  <td>
+                    <a class="transaction-id" href="/explorer/transaction/{{this.id}}">{{this.id}}</a>
+                  </td>
+                  <td>
+                    <a href="/explorer/address/{{this.receiver}}">{{this.receiver}}</a>
+                  </td>
                   <td>{{this.amount}}</td>
                 </tr>
                 {{/each}}
@@ -171,11 +175,13 @@
           let rows = [];
           for (const tx of data) {
             rows.unshift(`<tr>
-                      <th scope="row">
-                        <a class="custom-color transaction-id" 
+                      <td scope="row">
+                        <a class="transaction-id" 
                           href="/explorer/transaction/${tx.id}">${tx.id}</a>
-                      </th>
-                      <td>${tx.txOuts[0].address}</td>
+                      </td>
+                      <td>
+                        <a href="/explorer/address/${tx.txOuts[0].address}">${tx.txOuts[0].address}</a>
+                      </td>
                       <td>${tx.txOuts[0].amount}</td>
                     </tr>`);
           }
@@ -212,11 +218,13 @@
   function updateBlockChain(blockchain) {
     if (blockchain.length === 1) {
       let row = `<tr>
-                  <th scope="row">
-                    <a class="custom-color" href="/explorer/block/${blockchain[0].index}">${blockchain[0].index}</a>
-                  </th>
+                  <td scope="row">
+                    <a href="/explorer/block/${blockchain[0].index}">${blockchain[0].index}</a>
+                  </td>
                   <td>${moment(blockchain[0].timestamp * 1000).fromNow()}</td>
-                  <td>${blockchain[0].miner}</td>
+                  <td>
+                    <a href="/explorer/address/${blockchain[0].data[0].txOuts[0].address}">${blockchain[0].data[0].txOuts[0].address}</a>
+                  </td>
                   <td>${JSON.stringify(blockchain[0]).length}</td>
                 </tr>`;
       blockTable.destroy();
@@ -233,10 +241,12 @@
       for (const block of blockchain) {
         row = `<tr>
                   <th scope="row">${block.index}
-                    <a class="custom-color" href="/explorer/block/${block.index}">${block.index}</a>
+                    <a href="/explorer/block/${block.index}">${block.index}</a>
                   </th>
                   <td>${block.timestamp}</td>
-                  <td>${block.miner}</td>
+                  <td>
+                    <a href="/explorer/address/${block.data[0].txOuts[0].address}">${block.data[0].txOuts[0].address}</a>
+                  </td>
                   <td>${JSON.stringify(block).length}</td>
                 </tr>`;
         $('#block-rows').prepend(row);

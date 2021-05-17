@@ -232,7 +232,8 @@
 
   function createTransactionInputElement(txIn, unspentTxOutsOfBlock) {
     let ret = "";
-    const result = unspentTxOutsOfBlock.find(uTxO => uTxO.txOutId === txIn.txOutId);
+    const result = unspentTxOutsOfBlock.find(
+      uTxO => uTxO.txOutId === txIn.txOutId && uTxO.txOutIndex === txIn.txOutIndex);
     if (result) {
       ret = `<div class="d-flex small-text text-nowrap text-truncate transaction-In">
               <div class="text-nowrap text-truncate mr-3">

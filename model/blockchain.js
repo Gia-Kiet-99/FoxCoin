@@ -339,7 +339,7 @@ function replaceChain(newChain) {
   if (validChain && getAccumulatedDifficulty(newChain) > getAccumulatedDifficulty(getBlockChain())) {
     console.log('Received blockchain is valid. Replacing current blockchain with received blockchain');
 
-    blockchain = newBlocks;
+    blockchain = newChain;
 
     setUnspentTxOuts(aUnspentTxOuts);
     updateTransactionPool(unspentTxOuts);
@@ -628,8 +628,18 @@ function connectToPeer(url) {
     connectedNodeUrls.push(url);
   });
 
+  ws.on('close', () => {
+    console.log('Connection close');
+    for (let i = 0; i < connectedNodeUrls.length; i++) {
+      if (connectedNodeUrls[i] === url) {
+        connectedNodeUrls.splice(i, 1);
+        break;
+      }
+    }
+  });
+
   ws.on('error', () => {
-    console.log('Connection failed');
+    console.log('Connection error');
   });
 }
 
