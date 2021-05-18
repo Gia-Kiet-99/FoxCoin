@@ -47,6 +47,18 @@
             <div style="flex: 2" id="is-confirmed"></div>
           </li>
           <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Sender</div>
+            <div style="flex: 2" id="sender" class="text-nowrap text-truncate"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Receiver</div>
+            <div style="flex: 2" id="receiver" class="text-nowrap text-truncate"></div>
+          </li>
+          <li class="data-row d-flex block-data-row">
+            <div style="flex: 1">Value</div>
+            <div style="flex: 2"><span id="value"></span> FXC</div>
+          </li>
+          <li class="data-row d-flex block-data-row">
             <div style="flex: 1">Size</div>
             <div style="flex: 2" id="size"></div>
           </li>
@@ -106,6 +118,13 @@
       } else {
         $('#is-confirmed').html("<span class='danger-button'>Unconfirmed</span>");
       }
+      if (transaction.txIns[0].signature === "") {
+        $('#sender').text("System");
+      } else {
+        $('#sender').html(`<a href="/explorer/address/${unspentTxOutsOfTransaction[0].address}">${unspentTxOutsOfTransaction[0].address}</a>`);
+      }
+      $('#receiver').html(`<a href="/explorer/address/${transaction.txOuts[0].address}">${transaction.txOuts[0].address}</a>`);
+      $('#value').text(transaction.txOuts[0].amount);
       $('#size').text(JSON.stringify(transaction).length);
       if (blockIndex) {
         $('#block-index').html(`<a href="/explorer/block/${blockIndex}">${blockIndex}</a>`);
